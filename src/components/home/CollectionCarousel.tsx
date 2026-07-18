@@ -85,8 +85,8 @@ export default function CollectionCarousel() {
                 y: 0,
               }}
               whileHover={{ 
-                y: -20, 
-                scale: scale + 0.05,
+                y: -35, 
+                scale: scale + 0.15,
                 zIndex: zIndex + 20 
               }}
               transition={{ type: "spring", stiffness: 300, damping: 35 }}
