@@ -1,10 +1,48 @@
 "use client";
 
 import { useState, useCallback } from "react";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion, AnimatePresence, Variants } from "framer-motion";
 import Image from "next/image";
 import { ChevronLeft, ChevronRight, ShoppingBag } from "lucide-react";
 import { products } from "@/data/products";
+
+// Easing function for smooth cinematic motion
+const cinematicEase: [number, number, number, number] = [0.25, 1, 0.35, 1]; // highly responsive cubic-bezier
+
+// Stagger variants for text content
+const textContainerVariants: Variants = {
+  hidden: {},
+  show: {
+    transition: {
+      staggerChildren: 0.08,
+      delayChildren: 0.1, // Wait for slide to begin settling
+    },
+  },
+  exit: {
+    transition: {
+      staggerChildren: 0.04,
+      staggerDirection: -1,
+    }
+  }
+};
+
+const textItemVariants: Variants = {
+  hidden: { opacity: 0, y: 24 },
+  show: { opacity: 1, y: 0, transition: { duration: 0.7, ease: cinematicEase } },
+  exit: { opacity: 0, y: -16, transition: { duration: 0.4, ease: "easeOut" as any } },
+};
+
+// Subtle idle float for the active product image
+const imageIdleVariants: Variants = {
+  idle: {
+    y: [-3, 3, -3],
+    transition: {
+      duration: 5,
+      repeat: Infinity,
+      ease: "easeInOut",
+    },
+  },
+};
 
 export default function CollectionCarousel() {
   const [activeIndex, setActiveIndex] = useState(0);
@@ -14,19 +52,14 @@ export default function CollectionCarousel() {
     setActiveIndex(index);
   }, []);
 
-  const prev = () => {
-    goTo((activeIndex - 1 + products.length) % products.length);
-  };
-
-  const next = () => {
-    goTo((activeIndex + 1) % products.length);
-  };
+  const prev = () => goTo((activeIndex - 1 + products.length) % products.length);
+  const next = () => goTo((activeIndex + 1) % products.length);
 
   const getVisibleProducts = () => {
     const len = products.length;
     return [-2, -1, 0, 1, 2].map((offset) => {
       const index = (activeIndex + offset + len) % len;
-      return { product: products[index], offset };
+      return { product: products[index], offset, actualIndex: index };
     });
   };
 
@@ -34,26 +67,34 @@ export default function CollectionCarousel() {
 
   return (
     <div style={{ position: "relative", width: "100%" }}>
-      {/* Ripple Fill Background emanating from the active product (center) */}
-      <AnimatePresence mode="wait">
-        <motion.div
-          key={activeProduct.id + "-ripple"}
-          initial={{ clipPath: `circle(0% at 50% 50%)`, opacity: 0.9 }}
-          animate={{ clipPath: `circle(150% at 50% 50%)`, opacity: 1 }}
-          exit={{ opacity: 0 }}
-          transition={{ duration: 0.7, ease: "easeOut" }}
-          style={{
-            position: "absolute",
-            // Make it large enough to cover the parent section (FinalCTA)
-            top: "-500px", bottom: "-500px", left: "-50vw", right: "-50vw",
-            background: `radial-gradient(circle at 50% 50%, ${activeProduct.color}ee 0%, ${activeProduct.color}99 40%, ${activeProduct.color}44 100%)`,
-            pointerEvents: "none",
-            zIndex: -1,
-          }}
-        />
-      </AnimatePresence>
+      {/* ─── CINEMATIC BACKGROUND CROSSFADE ─── */}
+      <div 
+        style={{
+          position: "absolute",
+          top: "-600px", bottom: "-600px", left: "-50vw", right: "-50vw",
+          pointerEvents: "none",
+          zIndex: -1,
+          overflow: "hidden"
+        }}
+      >
+        <AnimatePresence mode="popLayout">
+          <motion.div
+            key={activeProduct.id + "-bg"}
+            initial={{ opacity: 0, scale: 1, filter: "blur(20px)" }}
+            animate={{ opacity: 1, scale: 1.05, filter: "blur(0px)" }}
+            exit={{ opacity: 0, scale: 1.1, filter: "blur(10px)" }}
+            transition={{ duration: 1.0, ease: "easeInOut" }}
+            style={{
+              position: "absolute",
+              inset: 0,
+              background: `radial-gradient(circle at 50% 50%, ${activeProduct.color}ee 0%, ${activeProduct.color}99 40%, #070707 100%)`,
+              willChange: "transform, opacity, filter"
+            }}
+          />
+        </AnimatePresence>
+      </div>
 
-      {/* Carousel track */}
+      {/* ─── 3D CAROUSEL TRACK ─── */}
       <div
         style={{
           position: "relative",
@@ -62,84 +103,101 @@ export default function CollectionCarousel() {
           display: "flex",
           justifyContent: "center",
           alignItems: "center",
-          height: "380px",
+          height: "420px",
           marginTop: "16px",
+          perspective: "1200px" // For authentic 3D depth
         }}
       >
-        {visible.map(({ product, offset }) => {
+        {visible.map(({ product, offset, actualIndex }) => {
           const isActive = offset === 0;
           const absOffset = Math.abs(offset);
-          const scale = isActive ? 1 : absOffset === 1 ? 0.75 : 0.55;
-          const opacity = isActive ? 1 : absOffset === 1 ? 0.65 : 0.3;
-          const translateX = offset * 240;
-          const zIndex = isActive ? 10 : absOffset === 1 ? 6 : 3;
+          
+          // Ultra smooth 3D transformations
+          const translateX = offset * 230; 
+          const scale = isActive ? 1.08 : absOffset === 1 ? 0.85 : 0.7;
+          const translateY = isActive ? -12 : 0;
+          const rotateY = offset * -8; // Slight rotation pointing towards center
+          const zIndex = 10 - absOffset;
+          const opacity = isActive ? 1 : absOffset === 1 ? 0.5 : 0.15;
+          const blur = isActive ? "0px" : absOffset === 1 ? "4px" : "8px";
+          const brightness = isActive ? "1" : "0.6";
 
           return (
             <motion.div
               key={product.id}
-              layout
+              initial={false}
               animate={{
                 x: translateX,
+                y: translateY,
                 scale,
+                rotateY,
                 opacity,
-                y: 0,
+                filter: `blur(${blur}) brightness(${brightness})`,
+                zIndex,
               }}
-              whileHover={{ 
-                y: -35, 
-                scale: scale + 0.15,
-                zIndex: zIndex + 20 
+              transition={{
+                duration: 0.8,
+                ease: cinematicEase,
               }}
-              transition={{ type: "spring", stiffness: 300, damping: 35 }}
-              onClick={(e) =>
-                !isActive &&
-                goTo(products.findIndex((p) => p.id === product.id))
-              }
+              onClick={() => !isActive && goTo(actualIndex)}
               style={{
                 position: "absolute",
-                zIndex,
                 cursor: isActive ? "default" : "pointer",
                 display: "flex",
                 flexDirection: "column",
                 alignItems: "center",
-                width: "280px",
+                width: "260px",
+                willChange: "transform, opacity, filter",
+                transformOrigin: "center bottom",
               }}
             >
-              {/* Product image with Transparent Glass Layer and heavily rounded corners */}
+              {/* Card Container */}
               <motion.div
-                animate={{ 
+                animate={{
                   boxShadow: isActive 
-                    ? `0 0 60px 10px ${product.color}80, inset 0 0 20px rgba(255,255,255,0.2)` 
-                    : `0 0 0px 0px ${product.color}00, inset 0 0 0px rgba(255,255,255,0)`
+                    ? `0 20px 60px -10px ${product.color}99, inset 0 0 20px rgba(255,255,255,0.3)` 
+                    : `0 0 0px 0px rgba(0,0,0,0), inset 0 0 0px rgba(255,255,255,0)`,
+                  borderColor: isActive ? `rgba(255,255,255,0.5)` : `rgba(255,255,255,0.05)`,
+                  backgroundColor: isActive ? "rgba(255,255,255,0.12)" : "rgba(255,255,255,0.02)",
                 }}
-                transition={{ duration: 0.8 }}
-                style={{ 
-                  position: "relative", 
-                  width: "260px", 
+                transition={{ duration: 0.8, ease: cinematicEase }}
+                style={{
+                  position: "relative",
+                  width: "260px",
                   height: "260px",
-                  borderRadius: "40px", // Highly rounded corners (outer glass frame)
-                  padding: "8px", // Creates the transparent layer
-                  background: isActive ? "rgba(255,255,255,0.15)" : "rgba(255,255,255,0.02)",
-                  backdropFilter: "blur(8px)",
-                  border: isActive ? `1.5px solid rgba(255,255,255,0.5)` : "1px solid rgba(255,255,255,0.1)",
+                  borderRadius: "32px",
+                  padding: "8px",
+                  backdropFilter: "blur(12px)",
+                  borderWidth: "1.5px",
+                  borderStyle: "solid",
+                  willChange: "transform, background-color, border-color, box-shadow",
                 }}
               >
                 <div style={{
                   position: "relative",
                   width: "100%",
                   height: "100%",
-                  borderRadius: "32px", // Inner rounded corners
+                  borderRadius: "24px",
                   overflow: "hidden",
-                  background: "#111", // Dark background so transparent PNGs look solid
+                  background: "#111", // Dark bg for contrast
                 }}>
-                  <Image
-                    src={product.image}
-                    alt={product.name}
-                    fill
-                    style={{
-                      objectFit: "cover",
-                    }}
-                    sizes="260px"
-                  />
+                  <motion.div 
+                    variants={isActive ? imageIdleVariants : undefined}
+                    animate={isActive ? "idle" : undefined}
+                    style={{ width: "100%", height: "100%", position: "relative" }}
+                  >
+                    <Image
+                      src={product.image}
+                      alt={product.name}
+                      fill
+                      style={{
+                        objectFit: "cover",
+                        transform: isActive ? "scale(1)" : "scale(0.96)",
+                        transition: "transform 0.8s cubic-bezier(0.25, 1, 0.35, 1)",
+                      }}
+                      sizes="260px"
+                    />
+                  </motion.div>
                 </div>
               </motion.div>
             </motion.div>
@@ -147,7 +205,7 @@ export default function CollectionCarousel() {
         })}
       </div>
 
-      {/* Active product info */}
+      {/* ─── STAGGERED TEXT ANIMATION ─── */}
       <div
         style={{
           position: "relative",
@@ -158,25 +216,20 @@ export default function CollectionCarousel() {
           maxWidth: "600px",
           marginLeft: "auto",
           marginRight: "auto",
+          minHeight: "220px", // prevent layout shift during exit/enter
         }}
       >
         <AnimatePresence mode="wait">
           <motion.div
             key={activeProduct.id + "-info"}
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -20 }}
-            transition={{ duration: 0.4 }}
+            variants={textContainerVariants}
+            initial="hidden"
+            animate="show"
+            exit="exit"
+            style={{ willChange: "transform, opacity" }}
           >
-            <div
-              style={{
-                display: "flex",
-                justifyContent: "center",
-                alignItems: "center",
-                gap: "10px",
-                marginBottom: "8px",
-              }}
-            >
+            {/* Emoji + Name */}
+            <motion.div variants={textItemVariants} style={{ display: "flex", justifyContent: "center", alignItems: "center", gap: "10px", marginBottom: "8px" }}>
               <span style={{ fontSize: "28px" }}>{activeProduct.emoji}</span>
               <h3
                 style={{
@@ -188,8 +241,10 @@ export default function CollectionCarousel() {
               >
                 {activeProduct.name}
               </h3>
-            </div>
-            <p
+            </motion.div>
+
+            {/* Flavor Name */}
+            <motion.p variants={textItemVariants}
               style={{
                 fontSize: "13px",
                 letterSpacing: "3px",
@@ -200,8 +255,10 @@ export default function CollectionCarousel() {
               }}
             >
               {activeProduct.flavor}
-            </p>
-            <p
+            </motion.p>
+
+            {/* Tagline */}
+            <motion.p variants={textItemVariants}
               style={{
                 fontSize: "15px",
                 color: "rgba(255,246,224,0.6)",
@@ -211,9 +268,10 @@ export default function CollectionCarousel() {
               }}
             >
               &ldquo;{activeProduct.tagline}&rdquo;
-            </p>
+            </motion.p>
 
-            <div
+            {/* Price & CTA */}
+            <motion.div variants={textItemVariants}
               style={{
                 display: "flex",
                 justifyContent: "center",
@@ -244,7 +302,11 @@ export default function CollectionCarousel() {
                   ₹{activeProduct.originalPrice}
                 </span>
               </div>
-              <button
+              
+              {/* Animated Premium Button */}
+              <motion.button
+                whileHover={{ scale: 1.05, boxShadow: `0 12px 32px ${activeProduct.color}80` }}
+                whileTap={{ scale: 0.95 }}
                 style={{
                   display: "inline-flex",
                   alignItems: "center",
@@ -260,103 +322,69 @@ export default function CollectionCarousel() {
                   fontFamily: "var(--font-accent)",
                   border: "none",
                   cursor: "pointer",
-                  transition: "transform 0.2s, box-shadow 0.2s",
-                  boxShadow: `0 8px 32px ${activeProduct.color}60`,
-                }}
-                onMouseEnter={(e) => {
-                  e.currentTarget.style.transform = "translateY(-2px)";
-                }}
-                onMouseLeave={(e) => {
-                  e.currentTarget.style.transform = "translateY(0)";
+                  boxShadow: `0 8px 24px ${activeProduct.color}40`,
+                  willChange: "transform, box-shadow",
                 }}
               >
                 <ShoppingBag size={16} />
                 Add to Cart
-              </button>
-            </div>
+              </motion.button>
+            </motion.div>
           </motion.div>
         </AnimatePresence>
       </div>
 
-      {/* Navigation arrows */}
-      <div
-        style={{
-          position: "absolute",
-          top: "42%",
-          left: "16px",
-          transform: "translateY(-50%)",
-          zIndex: 10,
-        }}
-      >
-        <button
+      {/* ─── NAVIGATION BUTTONS ─── */}
+      <div style={{ position: "absolute", top: "35%", left: "16px", transform: "translateY(-50%)", zIndex: 10 }}>
+        <motion.button
           onClick={prev}
           aria-label="Previous flavour"
+          whileHover={{ scale: 1.08, backgroundColor: "rgba(255,255,255,0.1)", boxShadow: "0 4px 20px rgba(255,255,255,0.15)" }}
+          whileTap={{ scale: 0.95 }}
           style={{
-            width: "48px",
-            height: "48px",
+            width: "52px",
+            height: "52px",
             borderRadius: "50%",
-            border: "1px solid rgba(255,255,255,0.12)",
-            background: "rgba(255,255,255,0.04)",
-            backdropFilter: "blur(12px)",
+            border: "1px solid rgba(255,255,255,0.15)",
+            background: "rgba(255,255,255,0.03)",
+            backdropFilter: "blur(16px)",
             color: "#FFF6E0",
             cursor: "pointer",
             display: "flex",
             alignItems: "center",
             justifyContent: "center",
-            transition: "all 0.2s",
-          }}
-          onMouseEnter={(e) => {
-            e.currentTarget.style.background = "rgba(255,255,255,0.1)";
-            e.currentTarget.style.borderColor = "rgba(212,150,26,0.3)";
-          }}
-          onMouseLeave={(e) => {
-            e.currentTarget.style.background = "rgba(255,255,255,0.04)";
-            e.currentTarget.style.borderColor = "rgba(255,255,255,0.12)";
+            willChange: "transform, background-color, box-shadow",
           }}
         >
-          <ChevronLeft size={22} />
-        </button>
+          <ChevronLeft size={24} />
+        </motion.button>
       </div>
-      <div
-        style={{
-          position: "absolute",
-          top: "42%",
-          right: "16px",
-          transform: "translateY(-50%)",
-          zIndex: 10,
-        }}
-      >
-        <button
+      <div style={{ position: "absolute", top: "35%", right: "16px", transform: "translateY(-50%)", zIndex: 10 }}>
+        <motion.button
           onClick={next}
           aria-label="Next flavour"
+          whileHover={{ scale: 1.08, backgroundColor: "rgba(255,255,255,0.1)", boxShadow: "0 4px 20px rgba(255,255,255,0.15)" }}
+          whileTap={{ scale: 0.95 }}
           style={{
-            width: "48px",
-            height: "48px",
+            width: "52px",
+            height: "52px",
             borderRadius: "50%",
-            border: "1px solid rgba(255,255,255,0.12)",
-            background: "rgba(255,255,255,0.04)",
-            backdropFilter: "blur(12px)",
+            border: "1px solid rgba(255,255,255,0.15)",
+            background: "rgba(255,255,255,0.03)",
+            backdropFilter: "blur(16px)",
             color: "#FFF6E0",
             cursor: "pointer",
             display: "flex",
             alignItems: "center",
             justifyContent: "center",
-            transition: "all 0.2s",
-          }}
-          onMouseEnter={(e) => {
-            e.currentTarget.style.background = "rgba(255,255,255,0.1)";
-            e.currentTarget.style.borderColor = "rgba(212,150,26,0.3)";
-          }}
-          onMouseLeave={(e) => {
-            e.currentTarget.style.background = "rgba(255,255,255,0.04)";
-            e.currentTarget.style.borderColor = "rgba(255,255,255,0.12)";
+            willChange: "transform, background-color, box-shadow",
           }}
         >
-          <ChevronRight size={22} />
-        </button>
+          <ChevronRight size={24} />
+        </motion.button>
       </div>
 
-      {/* Dot indicators */}
+      {/* ─── DOT INDICATORS ─── */}
       <div
         style={{
           position: "relative",
@@ -364,26 +392,26 @@ export default function CollectionCarousel() {
           display: "flex",
           justifyContent: "center",
           gap: "10px",
-          marginTop: "36px",
+          marginTop: "16px",
         }}
       >
         {products.map((p, i) => (
-          <button
+          <motion.button
             key={p.id}
             onClick={() => goTo(i)}
             aria-label={`View ${p.name}`}
+            animate={{
+              width: i === activeIndex ? 32 : 8,
+              backgroundColor: i === activeIndex ? activeProduct.color : "rgba(255,255,255,0.2)",
+            }}
+            transition={{ duration: 0.4, ease: "easeOut" }}
             style={{
-              width: i === activeIndex ? "28px" : "8px",
               height: "8px",
               borderRadius: "4px",
-              background:
-                i === activeIndex
-                  ? activeProduct.color
-                  : "rgba(255,255,255,0.2)",
               border: "none",
               cursor: "pointer",
-              transition: "all 0.3s ease",
               padding: 0,
+              willChange: "width, background-color",
             }}
           />
         ))}
