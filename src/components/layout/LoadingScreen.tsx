@@ -70,8 +70,8 @@ export default function LoadingScreen() {
                 />
               </svg>
 
-              {/* Inner Black Circle & Logo */}
-              <div className="relative w-[220px] h-[220px] bg-v-black rounded-full flex items-center justify-center shadow-2xl overflow-hidden">
+              {/* Inner Circle & Logo */}
+              <div className="relative w-[220px] h-[220px] bg-transparent rounded-full flex items-center justify-center overflow-hidden">
                 <motion.img
                   src="/logo.png"
                   alt="Vellari Logo"

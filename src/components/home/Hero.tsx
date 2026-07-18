@@ -320,7 +320,7 @@ export default function Hero() {
       <WarningMarquee />
 
       {/* Bottom gradient */}
-      <div style={{ position: "absolute", bottom: 0, left: 0, right: 0, height: "120px", background: "linear-gradient(to top, #FFF6E0, transparent)", zIndex: 10, pointerEvents: "none" }} />
+      <div style={{ position: "absolute", bottom: 0, left: 0, right: 0, height: "120px", background: "linear-gradient(to top, #FFF6E0, transparent)", zIndex: 4, pointerEvents: "none" }} />
     </section>
   );
 }
