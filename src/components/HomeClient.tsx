@@ -4,7 +4,7 @@
 import Navbar from "@/components/layout/Navbar";
 import Hero from "@/components/home/Hero";
 import ScrollAnimation from "@/components/home/ScrollAnimation";
-import ProductsInfo from "@/components/home/ProductsInfo";
+import FlavorScrollShowcase from "@/components/home/FlavorScrollShowcase";
 import BrandStory from "@/components/home/BrandStory";
 import LifestyleSection from "@/components/home/LifestyleSection";
 import Testimonials from "@/components/home/Testimonials";
@@ -20,7 +20,7 @@ export default function HomeClient() {
       <main className="grain">
         <Hero />
         <ScrollAnimation />
-        <ProductsInfo />
+        <FlavorScrollShowcase />
         <BrandStory />
         <LifestyleSection />
         <Testimonials />
