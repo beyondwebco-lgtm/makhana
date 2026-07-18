@@ -62,7 +62,7 @@ export default function RootLayout({
         />
         <link rel="preload" href="/logo.png" as="image" />
       </head>
-      <body className="min-h-screen bg-v-cream text-v-black antialiased overflow-x-hidden">
+      <body className="min-h-screen bg-v-cream text-v-black antialiased overflow-x-hidden" suppressHydrationWarning>
         {children}
       </body>
     </html>

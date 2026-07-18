@@ -101,7 +101,7 @@ export default function Navbar() {
           </Link>
 
           {/* Desktop Nav */}
-          <div className="hidden lg:flex items-center justify-center gap-10 xl:gap-12 absolute left-1/2 -translate-x-1/2 w-max">
+          <div className="hidden lg:flex flex-1 items-center justify-center gap-6 xl:gap-10 px-4">
             {navLinks.map((link) => (
               <button
                 key={link.label}
