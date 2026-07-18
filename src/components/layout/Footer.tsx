@@ -169,23 +169,10 @@ export default function Footer() {
       </motion.div>
 
       {/* Copyright & Floating Products */}
-      <div className="relative pt-12 text-center max-w-[1400px] mx-auto overflow-visible flex flex-col items-center">
-        <p className="text-[15px] font-bold z-10 relative mb-8 text-neutral-400">
+      <div className="relative pt-8 pb-8 text-center max-w-[1400px] mx-auto flex flex-col items-center">
+        <p className="text-[15px] font-bold text-neutral-400">
           Copyright © 2026, Vellari. All rights reserved.
         </p>
-        
-        {/* Jars peaking from bottom */}
-        <div className="flex justify-center items-end gap-6 sm:gap-12 relative h-[140px] w-full max-w-2xl mx-auto">
-          <motion.div whileHover={{ y: -25, scale: 1.1, rotate: -5 }} transition={{ type: "spring", stiffness: 300 }} className="cursor-pointer">
-            <Image src="/products/3.png" alt="Product" width={140} height={140} className="w-28 sm:w-36 h-auto object-contain drop-shadow-2xl" />
-          </motion.div>
-          <motion.div whileHover={{ y: -30, scale: 1.15 }} transition={{ type: "spring", stiffness: 300 }} className="z-10 cursor-pointer">
-            <Image src="/products/1.png" alt="Product" width={160} height={160} className="w-32 sm:w-44 h-auto object-contain drop-shadow-[0_20px_40px_rgba(0,0,0,0.8)]" />
-          </motion.div>
-          <motion.div whileHover={{ y: -25, scale: 1.1, rotate: 5 }} transition={{ type: "spring", stiffness: 300 }} className="cursor-pointer">
-            <Image src="/products/2.png" alt="Product" width={140} height={140} className="w-28 sm:w-36 h-auto object-contain drop-shadow-2xl" />
-          </motion.div>
-        </div>
       </div>
 
     </footer>
