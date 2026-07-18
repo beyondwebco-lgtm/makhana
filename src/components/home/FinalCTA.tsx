@@ -129,8 +129,13 @@ export default function FinalCTA() {
         <motion.div
           initial={{ opacity: 0, y: 30 }}
           animate={isInView ? { opacity: 1, y: 0 } : {}}
+          whileHover={{ 
+            scale: 1.05, 
+            y: -12, 
+            transition: { type: "spring", stiffness: 400, damping: 25 } 
+          }}
           transition={{ duration: 0.8 }}
-          style={{ textAlign: "center", marginBottom: "56px" }}
+          style={{ textAlign: "center", marginBottom: "56px", cursor: "default" }}
         >
           <span
             style={{
