@@ -82,7 +82,7 @@ export default function Footer() {
               <span className="text-5xl lg:text-6xl font-black tracking-widest font-[family-name:var(--font-body)]">VELLARI</span>
             </div>
             
-            <p className="font-bold text-[15px] mb-6 max-w-[280px] leading-relaxed text-neutral-200">
+            <p className="font-bold text-[15px] mb-10 mt-2 max-w-[300px] leading-relaxed text-neutral-200">
               "Bold snacks. New drops. Deals you'll want first dibs on."
             </p>
             
