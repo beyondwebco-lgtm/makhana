@@ -224,7 +224,8 @@ export default function FlavorScrollShowcase() {
             transition={{ type: "spring", stiffness: 400, damping: 25 }}
             style={{
               display: "inline-block",
-              fontSize: "14px",
+              fontSize: "18px",
+              fontWeight: "bold",
               letterSpacing: "6px",
               color: "rgba(255,255,255,0.65)",
               textTransform: "uppercase",
