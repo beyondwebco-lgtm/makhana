@@ -4,7 +4,7 @@ import { useRef, useState, useEffect } from "react";
 import { motion, AnimatePresence, useScroll, useTransform, Variants } from "framer-motion";
 import Image from "next/image";
 import { products } from "@/data/products";
-import { ArrowRight, ChevronUp, ChevronDown } from "lucide-react";
+import { ArrowRight, ChevronUp, ChevronDown, Sparkles } from "lucide-react";
 
 // Themed background configs for each product
 const productThemes: Record<string, { bg: string; glow: string; accent: string; particles: string[] }> = {
@@ -219,22 +219,41 @@ export default function FlavorScrollShowcase() {
             textAlign: "center",
           }}
         >
-          <motion.span
-            whileHover={{ scale: 1.15, color: "rgba(255,255,255,0.95)" }}
+          <motion.div
+            whileHover={{ 
+              scale: 1.05, 
+              backgroundColor: "rgba(255,255,255,0.12)",
+              borderColor: "rgba(255,255,255,0.3)",
+              boxShadow: "0 8px 32px rgba(255,255,255,0.15)"
+            }}
             transition={{ type: "spring", stiffness: 400, damping: 25 }}
             style={{
-              display: "inline-block",
-              fontSize: "18px",
-              fontWeight: "bold",
-              letterSpacing: "6px",
-              color: "rgba(255,255,255,0.65)",
-              textTransform: "uppercase",
-              fontFamily: "var(--font-accent)",
+              display: "inline-flex",
+              alignItems: "center",
+              gap: "10px",
+              padding: "10px 24px",
+              borderRadius: "100px",
+              backgroundColor: "rgba(255,255,255,0.05)",
+              border: "1px solid rgba(255,255,255,0.1)",
+              backdropFilter: "blur(12px)",
               cursor: "default",
             }}
           >
-            MEET THE FLAVOURS
-          </motion.span>
+            <Sparkles size={16} color="rgba(255,255,255,0.8)" />
+            <span
+              style={{
+                fontSize: "15px",
+                fontWeight: "700",
+                letterSpacing: "6px",
+                color: "rgba(255,255,255,0.9)",
+                textTransform: "uppercase",
+                fontFamily: "var(--font-accent)",
+              }}
+            >
+              MEET THE FLAVOURS
+            </span>
+            <Sparkles size={16} color="rgba(255,255,255,0.8)" />
+          </motion.div>
         </div>
 
         {/* === Main split layout === */}
