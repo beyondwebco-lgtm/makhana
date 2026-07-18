@@ -4,6 +4,7 @@ import { useRef, useEffect, useCallback } from "react";
 import { motion } from "framer-motion";
 import Image from "next/image";
 import { ArrowRight, ChevronDown } from "lucide-react";
+import WarningMarquee from "./WarningMarquee";
 
 export default function Hero() {
   const parallaxRef = useRef<HTMLDivElement>(null);
@@ -66,7 +67,7 @@ export default function Hero() {
           width: "100%",
           maxWidth: "1280px",
           margin: "0 auto",
-          padding: "120px 48px 80px",
+          padding: "120px 48px 140px",
           display: "grid",
           gridTemplateColumns: "1fr 1fr",
           alignItems: "center",
@@ -314,6 +315,9 @@ export default function Hero() {
           <ChevronDown style={{ width: "16px", height: "16px", color: "#8B7355" }} />
         </motion.div>
       </motion.div>
+
+      {/* Warning Marquee */}
+      <WarningMarquee />
 
       {/* Bottom gradient */}
       <div style={{ position: "absolute", bottom: 0, left: 0, right: 0, height: "120px", background: "linear-gradient(to top, #FFF6E0, transparent)", zIndex: 10, pointerEvents: "none" }} />

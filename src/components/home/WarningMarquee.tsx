@@ -23,7 +23,7 @@ export default function WarningMarquee() {
         right: 0,
         height: "100%", // Cover the whole hero section vertically
         pointerEvents: "none", // Let clicks pass through to Hero
-        zIndex: 40,
+        zIndex: 5,
         overflow: "hidden",
       }}
     >

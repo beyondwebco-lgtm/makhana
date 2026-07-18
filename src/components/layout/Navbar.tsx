@@ -93,7 +93,8 @@ export default function Navbar() {
               src="/logo.png"
               alt="Vellari Logo"
               className={cn(
-                "h-16 md:h-20 w-auto object-contain transition-all duration-500",
+                "w-auto object-contain transition-all duration-500",
+                scrolled ? "h-14 md:h-18" : "h-20 md:h-24",
                 pastHero && scrolled ? "opacity-100" : "opacity-90 hover:opacity-100"
               )}
             />

@@ -9,7 +9,6 @@ import BrandStory from "@/components/home/BrandStory";
 import LifestyleSection from "@/components/home/LifestyleSection";
 import Testimonials from "@/components/home/Testimonials";
 import FinalCTA from "@/components/home/FinalCTA";
-import WarningMarquee from "@/components/home/WarningMarquee";
 import Footer from "@/components/layout/Footer";
 
 const LoadingScreen = dynamic(
@@ -24,7 +23,6 @@ export default function HomeClient() {
       <Navbar />
       <main className="grain">
         <Hero />
-        <WarningMarquee />
         <ScrollAnimation />
         <ProductsInfo />
         <BrandStory />
