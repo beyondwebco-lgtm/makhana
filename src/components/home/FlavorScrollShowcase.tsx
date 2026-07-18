@@ -4,7 +4,7 @@ import { useRef, useState, useEffect } from "react";
 import { motion, AnimatePresence, useScroll, useTransform, Variants } from "framer-motion";
 import Image from "next/image";
 import { products } from "@/data/products";
-import { ArrowRight } from "lucide-react";
+import { ArrowRight, ChevronUp, ChevronDown } from "lucide-react";
 
 // Themed background configs for each product
 const productThemes: Record<string, { bg: string; glow: string; accent: string; particles: string[] }> = {
@@ -108,6 +108,17 @@ export default function FlavorScrollShowcase() {
     target: containerRef,
     offset: ["start start", "end end"],
   });
+
+  const scrollToIndex = (index: number) => {
+    if (!containerRef.current) return;
+    const targetIdx = Math.max(0, Math.min(index, numProducts - 1));
+    const vh = window.innerHeight;
+    const containerStart = containerRef.current.offsetTop;
+    window.scrollTo({
+      top: containerStart + targetIdx * vh,
+      behavior: "smooth"
+    });
+  };
 
   // Map scroll progress to active product index
   useEffect(() => {
@@ -265,8 +276,6 @@ export default function FlavorScrollShowcase() {
               />
             </AnimatePresence>
 
-            {/* The jar itself */}
-            <AnimatePresence mode="wait">
               <motion.div
                 key={product.slug + "-jar"}
                 initial={{ opacity: 0, scale: 0.85, rotate: -6, y: 40 }}
@@ -280,20 +289,36 @@ export default function FlavorScrollShowcase() {
                   animate="animate"
                   style={{
                     filter: `drop-shadow(0 30px 60px ${theme.glow})`,
+                    cursor: "pointer",
                   }}
                 >
-                  <Image
-                    src={product.image}
-                    alt={product.name}
-                    width={500}
-                    height={500}
-                    priority
-                    style={{
-                      width: "clamp(280px, 36vw, 520px)",
-                      height: "auto",
-                      objectFit: "contain",
+                  <motion.div
+                    whileHover={{ 
+                      scale: 1.05, 
+                      y: -15, 
+                      borderColor: theme.accent,
+                      backgroundColor: "rgba(255,255,255,0.05)",
                     }}
-                  />
+                    style={{
+                      border: "2px solid transparent",
+                      borderRadius: "32px",
+                      padding: "20px",
+                      transition: "border-color 0.3s, background-color 0.3s",
+                    }}
+                  >
+                    <Image
+                      src={product.image}
+                      alt={product.name}
+                      width={500}
+                      height={500}
+                      priority
+                      style={{
+                        width: "clamp(280px, 36vw, 520px)",
+                        height: "auto",
+                        objectFit: "contain",
+                      }}
+                    />
+                  </motion.div>
                 </motion.div>
               </motion.div>
             </AnimatePresence>
@@ -454,7 +479,7 @@ export default function FlavorScrollShowcase() {
           </div>
         </div>
 
-        {/* === Progress indicator (right side) === */}
+        {/* === Progress indicator & Navigation (right side) === */}
         <div
           style={{
             position: "absolute",
@@ -465,9 +490,23 @@ export default function FlavorScrollShowcase() {
             display: "flex",
             flexDirection: "column",
             alignItems: "center",
-            gap: "10px",
+            gap: "12px",
           }}
         >
+          <button 
+            onClick={() => scrollToIndex(activeIndex - 1)}
+            style={{ 
+              background: "transparent", 
+              border: "none", 
+              color: "rgba(255,255,255,0.7)", 
+              cursor: activeIndex > 0 ? "pointer" : "default",
+              opacity: activeIndex > 0 ? 1 : 0.2,
+              padding: "4px" 
+            }}
+          >
+            <ChevronUp size={20} />
+          </button>
+
           {/* Counter */}
           <span
             style={{
@@ -475,26 +514,41 @@ export default function FlavorScrollShowcase() {
               color: "rgba(255,255,255,0.5)",
               fontFamily: "var(--font-accent)",
               letterSpacing: "2px",
-              marginBottom: "6px",
             }}
           >
             {String(activeIndex + 1).padStart(2, "0")}/{String(numProducts).padStart(2, "0")}
           </span>
           {/* Dots */}
-          {products.map((_, i) => (
-            <motion.div
-              key={i}
-              animate={{
-                width: i === activeIndex ? "4px" : "4px",
-                height: i === activeIndex ? "28px" : "8px",
-                background:
-                  i === activeIndex ? "#FFFFFF" : "rgba(255,255,255,0.25)",
-                borderRadius: "4px",
-              }}
-              transition={{ duration: 0.3 }}
-              style={{ width: "4px", borderRadius: "4px" }}
-            />
-          ))}
+          <div style={{ display: "flex", flexDirection: "column", gap: "10px", margin: "8px 0" }}>
+            {products.map((_, i) => (
+              <motion.div
+                key={i}
+                animate={{
+                  width: i === activeIndex ? "4px" : "4px",
+                  height: i === activeIndex ? "28px" : "8px",
+                  background:
+                    i === activeIndex ? "#FFFFFF" : "rgba(255,255,255,0.25)",
+                  borderRadius: "4px",
+                }}
+                transition={{ duration: 0.3 }}
+                style={{ width: "4px", borderRadius: "4px" }}
+              />
+            ))}
+          </div>
+
+          <button 
+            onClick={() => scrollToIndex(activeIndex + 1)}
+            style={{ 
+              background: "transparent", 
+              border: "none", 
+              color: "rgba(255,255,255,0.7)", 
+              cursor: activeIndex < numProducts - 1 ? "pointer" : "default",
+              opacity: activeIndex < numProducts - 1 ? 1 : 0.2,
+              padding: "4px"
+            }}
+          >
+            <ChevronDown size={20} />
+          </button>
         </div>
 
         {/* Scroll hint (only shown for first product) */}
