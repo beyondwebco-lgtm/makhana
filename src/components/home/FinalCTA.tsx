@@ -127,8 +127,8 @@ export default function FinalCTA() {
       >
         {/* Header */}
         <motion.div
-          initial={{ opacity: 0, y: 30 }}
-          animate={isInView ? { opacity: 1, y: 0 } : {}}
+          initial={{ opacity: 0, y: 40, scale: 0.85 }}
+          animate={isInView ? { opacity: 1, y: 0, scale: 1 } : {}}
           whileHover={{ 
             scale: 1.05, 
             y: -12, 
