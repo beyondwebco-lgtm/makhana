@@ -75,36 +75,36 @@ export default function Footer() {
           
           {/* Col 1: Brand & Newsletter */}
           <div className="flex flex-col items-start max-w-sm">
-            <div className="flex items-center gap-4 mb-6">
-              <div className="w-20 h-20 bg-black rounded-full flex items-center justify-center p-3 border border-white/10 shrink-0">
+            <div className="flex items-center gap-4 mb-8">
+              <div className="w-20 h-20 bg-black flex items-center justify-center p-2 rounded-xl border border-white/10 shrink-0 shadow-lg">
                 <img src="/footer-logo.png" alt="Vellari" className="w-full h-auto object-contain drop-shadow-md" />
               </div>
               <span className="text-5xl lg:text-6xl font-black tracking-widest font-[family-name:var(--font-body)]">VELLARI</span>
             </div>
             
-            <p className="font-bold text-sm mb-6 max-w-[280px] leading-snug">
+            <p className="font-bold text-[15px] mb-6 max-w-[280px] leading-relaxed text-neutral-200">
               "Bold snacks. New drops. Deals you'll want first dibs on."
             </p>
             
-            <div className="flex bg-white rounded-full p-1 w-full max-w-[320px]">
+            <div className="flex bg-white rounded-full p-1.5 w-full max-w-[340px] shadow-inner mt-2">
               <input
                 type="email"
                 placeholder="We don't spam!"
-                className="flex-1 bg-transparent text-black px-4 outline-none text-sm font-medium placeholder:text-gray-400"
+                className="flex-1 bg-transparent text-black px-5 py-2 outline-none text-[15px] font-medium placeholder:text-gray-500"
               />
-              <button className="bg-black text-white px-6 py-2 rounded-full text-sm font-bold whitespace-nowrap hover:bg-neutral-800 transition-colors">
+              <button className="bg-black text-white px-8 py-2.5 rounded-full text-[15px] font-black tracking-wide whitespace-nowrap hover:bg-neutral-800 transition-colors shadow-md">
                 Subscribe
               </button>
             </div>
           </div>
 
           {/* Col 2: Quick Links */}
-          <div className="flex flex-col">
+          <div className="flex flex-col mt-4 lg:mt-0">
             <h4 className="text-lg font-black uppercase tracking-wider mb-6 font-[family-name:var(--font-body)]">Quick Links</h4>
             <ul className="flex flex-col gap-4">
               {quickLinks.map((link) => (
                 <li key={link.label}>
-                  <a href={link.href} className="text-sm text-neutral-200 hover:text-white transition-colors">
+                  <a href={link.href} className="text-[15px] font-medium text-neutral-300 hover:text-white hover:translate-x-1 inline-block transition-all">
                     {link.label}
                   </a>
                 </li>
@@ -113,12 +113,12 @@ export default function Footer() {
           </div>
 
           {/* Col 3: Our Policies */}
-          <div className="flex flex-col">
+          <div className="flex flex-col mt-4 lg:mt-0">
             <h4 className="text-lg font-black uppercase tracking-wider mb-6 font-[family-name:var(--font-body)]">Our Policies</h4>
             <ul className="flex flex-col gap-4">
               {policies.map((link) => (
                 <li key={link.label}>
-                  <a href={link.href} className="text-sm text-neutral-200 hover:text-white transition-colors">
+                  <a href={link.href} className="text-[15px] font-medium text-neutral-300 hover:text-white hover:translate-x-1 inline-block transition-all">
                     {link.label}
                   </a>
                 </li>
@@ -127,31 +127,31 @@ export default function Footer() {
           </div>
 
           {/* Col 4: Get In Touch */}
-          <div className="flex flex-col">
+          <div className="flex flex-col mt-4 lg:mt-0">
             <h4 className="text-lg font-black uppercase tracking-wider mb-6 font-[family-name:var(--font-body)]">Get In Touch</h4>
             <div className="flex flex-col gap-5">
-              <a href="tel:+919911470022" className="flex items-center gap-3 text-sm text-neutral-200 hover:text-white transition-colors">
-                <Phone className="w-5 h-5" />
+              <a href="tel:+919911470022" className="flex items-center gap-3 text-[15px] font-medium text-neutral-300 hover:text-white transition-colors">
+                <Phone className="w-5 h-5 text-v-gold" />
                 +91-9911470022
               </a>
-              <div className="flex items-center gap-3 text-sm text-neutral-200">
-                <Clock className="w-5 h-5" />
+              <div className="flex items-center gap-3 text-[15px] font-medium text-neutral-300">
+                <Clock className="w-5 h-5 text-v-gold" />
                 'Monday to Friday (10am - 6pm)'
               </div>
-              <a href="mailto:hello@vellari.com" className="flex items-center gap-3 text-sm text-neutral-200 hover:text-white transition-colors">
-                <Mail className="w-5 h-5" />
+              <a href="mailto:hello@vellari.com" className="flex items-center gap-3 text-[15px] font-medium text-neutral-300 hover:text-white transition-colors">
+                <Mail className="w-5 h-5 text-v-gold" />
                 hello@vellari.com
               </a>
               
-              <div className="flex items-center gap-3 mt-2">
+              <div className="flex items-center gap-4 mt-4">
                 {[
                   { icon: FacebookIcon, href: "#" },
                   { icon: TwitterIcon, href: "#" },
                   { icon: InstagramIcon, href: "#" },
                   { icon: YoutubeIcon, href: "#" }
                 ].map((social, i) => (
-                  <a key={i} href={social.href} className="w-8 h-8 bg-white text-black rounded-full flex items-center justify-center hover:scale-110 transition-transform">
-                    <social.icon className="w-4 h-4 fill-current" />
+                  <a key={i} href={social.href} className="w-10 h-10 bg-white text-black rounded-full flex items-center justify-center hover:scale-110 hover:bg-v-gold hover:text-white shadow-lg transition-all">
+                    <social.icon className="w-5 h-5 fill-current" />
                   </a>
                 ))}
               </div>
@@ -160,27 +160,35 @@ export default function Footer() {
 
         </div>
 
-        {/* Bottom Disclaimer */}
-        <div className="border-t border-white/10 pt-6">
-          <p className="text-[13px] text-neutral-300 leading-relaxed font-medium">
-            Consumers may note that the Company is not affiliated with PVR Inox Limited with effect from 29th January, 2026 and PVR Inox Limited is not involved in manufacturing, quality control or marketing of the Company's products.
+        {/* Catchy Pickup Line */}
+        <div className="pt-8 text-center w-full mt-4">
+          <p className="text-xl md:text-2xl font-black tracking-wide text-v-gold font-[family-name:var(--font-body)]">
+            Flirty Flavours. Crunchy Feelings. Your midnight crush awaits. ♡
           </p>
         </div>
       </motion.div>
 
       {/* Copyright & Floating Products */}
-      <div className="relative pt-10 pb-6 text-center max-w-[1400px] mx-auto overflow-hidden">
-        <p className="text-sm font-medium z-10 relative">
+      <div className="relative pt-12 text-center max-w-[1400px] mx-auto overflow-visible flex flex-col items-center">
+        <p className="text-[15px] font-bold z-10 relative mb-8 text-neutral-400">
           Copyright © 2026, Vellari. All rights reserved.
         </p>
         
         {/* Jars peaking from bottom */}
-        <div className="flex justify-center items-end gap-2 sm:gap-6 mt-6 translate-y-4">
-          <Image src="/products/3.png" alt="Product" width={100} height={100} className="w-20 sm:w-28 h-auto object-contain hover:-translate-y-4 transition-transform duration-500" />
-          <Image src="/products/1.png" alt="Product" width={120} height={120} className="w-24 sm:w-32 h-auto object-contain z-10 hover:-translate-y-4 transition-transform duration-500 drop-shadow-2xl" />
-          <Image src="/products/2.png" alt="Product" width={100} height={100} className="w-20 sm:w-28 h-auto object-contain hover:-translate-y-4 transition-transform duration-500" />
+        <div className="flex justify-center items-end gap-6 sm:gap-12 relative h-[140px] w-full max-w-2xl mx-auto">
+          <motion.div whileHover={{ y: -25, scale: 1.1, rotate: -5 }} transition={{ type: "spring", stiffness: 300 }} className="cursor-pointer">
+            <Image src="/products/3.png" alt="Product" width={140} height={140} className="w-28 sm:w-36 h-auto object-contain drop-shadow-2xl" />
+          </motion.div>
+          <motion.div whileHover={{ y: -30, scale: 1.15 }} transition={{ type: "spring", stiffness: 300 }} className="z-10 cursor-pointer">
+            <Image src="/products/1.png" alt="Product" width={160} height={160} className="w-32 sm:w-44 h-auto object-contain drop-shadow-[0_20px_40px_rgba(0,0,0,0.8)]" />
+          </motion.div>
+          <motion.div whileHover={{ y: -25, scale: 1.1, rotate: 5 }} transition={{ type: "spring", stiffness: 300 }} className="cursor-pointer">
+            <Image src="/products/2.png" alt="Product" width={140} height={140} className="w-28 sm:w-36 h-auto object-contain drop-shadow-2xl" />
+          </motion.div>
         </div>
       </div>
+
+    </footer>
 
     </footer>
   );
