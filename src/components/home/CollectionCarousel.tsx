@@ -84,6 +84,11 @@ export default function CollectionCarousel() {
                 opacity,
                 y: 0,
               }}
+              whileHover={{ 
+                y: -20, 
+                scale: scale + 0.05,
+                zIndex: zIndex + 20 
+              }}
               transition={{ type: "spring", stiffness: 300, damping: 35 }}
               onClick={(e) =>
                 !isActive &&
