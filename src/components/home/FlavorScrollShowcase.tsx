@@ -276,6 +276,8 @@ export default function FlavorScrollShowcase() {
               />
             </AnimatePresence>
 
+            {/* The jar itself */}
+            <AnimatePresence mode="wait">
               <motion.div
                 key={product.slug + "-jar"}
                 initial={{ opacity: 0, scale: 0.85, rotate: -6, y: 40 }}
