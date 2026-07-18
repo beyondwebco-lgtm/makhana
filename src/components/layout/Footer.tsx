@@ -71,15 +71,15 @@ export default function Footer() {
         }}
       >
         {/* Top Section: 4 Columns */}
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-10">
+        <div className="flex flex-col lg:flex-row justify-between gap-10">
           
-          {/* Col 1: Brand & Newsletter (spans 4 cols) */}
-          <div className="lg:col-span-4 flex flex-col items-start">
+          {/* Col 1: Brand & Newsletter */}
+          <div className="flex flex-col items-start max-w-sm">
             <div className="flex items-center gap-4 mb-6">
-              <div className="w-16 h-16 bg-black rounded-full flex items-center justify-center p-2 border border-white/10">
-                <img src="/logo.png" alt="Vellari" className="w-full h-auto object-contain" />
+              <div className="w-20 h-20 bg-black rounded-full flex items-center justify-center p-3 border border-white/10 shrink-0">
+                <img src="/footer-logo.png" alt="Vellari" className="w-full h-auto object-contain drop-shadow-md" />
               </div>
-              <span className="text-4xl font-black tracking-widest font-[family-name:var(--font-body)]">VELLARI</span>
+              <span className="text-5xl lg:text-6xl font-black tracking-widest font-[family-name:var(--font-body)]">VELLARI</span>
             </div>
             
             <p className="font-bold text-sm mb-6 max-w-[280px] leading-snug">
@@ -98,8 +98,8 @@ export default function Footer() {
             </div>
           </div>
 
-          {/* Col 2: Quick Links (spans 2 cols) */}
-          <div className="lg:col-span-2">
+          {/* Col 2: Quick Links */}
+          <div className="flex flex-col">
             <h4 className="text-lg font-black uppercase tracking-wider mb-6 font-[family-name:var(--font-body)]">Quick Links</h4>
             <ul className="flex flex-col gap-4">
               {quickLinks.map((link) => (
@@ -112,8 +112,8 @@ export default function Footer() {
             </ul>
           </div>
 
-          {/* Col 3: Our Policies (spans 2 cols) */}
-          <div className="lg:col-span-2">
+          {/* Col 3: Our Policies */}
+          <div className="flex flex-col">
             <h4 className="text-lg font-black uppercase tracking-wider mb-6 font-[family-name:var(--font-body)]">Our Policies</h4>
             <ul className="flex flex-col gap-4">
               {policies.map((link) => (
@@ -126,8 +126,8 @@ export default function Footer() {
             </ul>
           </div>
 
-          {/* Col 4: Get In Touch (spans 4 cols) */}
-          <div className="lg:col-span-4">
+          {/* Col 4: Get In Touch */}
+          <div className="flex flex-col">
             <h4 className="text-lg font-black uppercase tracking-wider mb-6 font-[family-name:var(--font-body)]">Get In Touch</h4>
             <div className="flex flex-col gap-5">
               <a href="tel:+919911470022" className="flex items-center gap-3 text-sm text-neutral-200 hover:text-white transition-colors">
