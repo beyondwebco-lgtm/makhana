@@ -2,7 +2,7 @@
 
 import { motion } from "framer-motion";
 import { useInView } from "@/hooks/useAnimations";
-import { Phone, Clock, Mail } from "lucide-react";
+import { Phone, Clock, Mail, ChevronUp } from "lucide-react";
 import Image from "next/image";
 
 // Custom SVG Icons for Socials
@@ -168,11 +168,19 @@ export default function Footer() {
         </div>
       </motion.div>
 
-      {/* Copyright & Floating Products */}
-      <div className="relative pt-8 pb-8 text-center max-w-[1400px] mx-auto flex flex-col items-center">
-        <p className="text-[15px] font-bold text-neutral-400">
+      {/* Copyright & Scroll to Top */}
+      <div className="relative pt-8 pb-8 flex flex-col sm:flex-row items-center justify-between max-w-[1400px] mx-auto w-full px-6">
+        <p className="text-[15px] font-bold text-neutral-400 order-2 sm:order-1 mt-4 sm:mt-0">
           Copyright © 2026, Vellari. All rights reserved.
         </p>
+
+        <button 
+          onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
+          className="order-1 sm:order-2 flex items-center justify-center w-12 h-12 rounded-full bg-[#3A3A3A] hover:bg-v-gold text-white hover:text-black transition-all shadow-lg hover:scale-110"
+          aria-label="Scroll to top"
+        >
+          <ChevronUp className="w-6 h-6" />
+        </button>
       </div>
 
     </footer>
