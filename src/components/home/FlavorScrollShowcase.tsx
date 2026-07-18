@@ -219,17 +219,21 @@ export default function FlavorScrollShowcase() {
             textAlign: "center",
           }}
         >
-          <span
+          <motion.span
+            whileHover={{ scale: 1.15, color: "rgba(255,255,255,0.95)" }}
+            transition={{ type: "spring", stiffness: 400, damping: 25 }}
             style={{
-              fontSize: "11px",
-              letterSpacing: "5px",
-              color: "rgba(255,255,255,0.55)",
+              display: "inline-block",
+              fontSize: "14px",
+              letterSpacing: "6px",
+              color: "rgba(255,255,255,0.65)",
               textTransform: "uppercase",
               fontFamily: "var(--font-accent)",
+              cursor: "default",
             }}
           >
             MEET THE FLAVOURS
-          </span>
+          </motion.span>
         </div>
 
         {/* === Main split layout === */}
