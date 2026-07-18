@@ -87,7 +87,7 @@ export default function CollectionCarousel() {
               transition={{ type: "spring", stiffness: 300, damping: 35 }}
               onClick={(e) =>
                 !isActive &&
-                goTo(products.findIndex((p) => p.id === product.id), e as any)
+                goTo(products.findIndex((p) => p.id === product.id))
               }
               style={{
                 position: "absolute",
