@@ -2,150 +2,161 @@
 
 import { motion } from "framer-motion";
 import { useInView } from "@/hooks/useAnimations";
-import { Globe, MapPin, Mail, ArrowUpRight } from "lucide-react";
+import { Phone, Clock, Mail, Facebook, Twitter, Instagram, Youtube } from "lucide-react";
+import Image from "next/image";
 
-const footerLinks = {
-  shop: [
-    { label: "All Products", href: "#products" },
-    { label: "Flavours", href: "#products" },
-    { label: "Our Story", href: "#story" },
-  ],
-  support: [
-    { label: "FAQs", href: "#" },
-    { label: "Shipping Policy", href: "#" },
-    { label: "Privacy Policy", href: "#" },
-    { label: "Terms & Conditions", href: "#" },
-  ],
-};
+const quickLinks = [
+  { label: "About Us", href: "#" },
+  { label: "GST-2.0", href: "#" },
+  { label: "Make Your Own Mix", href: "#" },
+  { label: "Snacking", href: "#" },
+  { label: "Gifting", href: "#" },
+  { label: "Recipes", href: "#" },
+  { label: "Blogs", href: "#" },
+  { label: "Contact Us", href: "#" },
+];
 
-const socialLinks = [
-  { icon: Globe, href: "https://instagram.com", label: "Instagram" },
-  { icon: Globe, href: "https://facebook.com", label: "Facebook" },
-  { icon: Globe, href: "https://youtube.com", label: "YouTube" },
+const policies = [
+  { label: "Shipping Policy", href: "#" },
+  { label: "Return & Refund", href: "#" },
+  { label: "Privacy Policy", href: "#" },
+  { label: "Terms of Service", href: "#" },
 ];
 
 export default function Footer() {
   const { ref, isInView } = useInView(0.1);
 
   return (
-    <footer ref={ref} id="footer" style={{ width: "100%", background: "#070707", borderTop: "1px solid rgba(255,255,255,0.05)", color: "white" }}>
-
-      {/* Newsletter — centered */}
-      <div style={{ borderBottom: "1px solid rgba(255,255,255,0.05)", padding: "80px 24px" }}>
-        <motion.div
-          initial={{ opacity: 0, y: 40 }}
-          animate={isInView ? { opacity: 1, y: 0 } : {}}
-          transition={{ duration: 0.8 }}
-          style={{ maxWidth: "560px", margin: "0 auto", textAlign: "center" }}
-        >
-          <h3 style={{ fontSize: "clamp(28px, 4vw, 40px)", fontFamily: "var(--font-body)", fontWeight: "700", color: "#FFF6E0", marginBottom: "10px" }}>
-            Stay in the loop
-          </h3>
-          <p style={{ color: "#8B7355", fontSize: "14px", marginBottom: "32px" }}>
-            Subscribe for exclusive drops, flirty updates, and first access to limited editions.
-          </p>
-          <div style={{ display: "flex", width: "100%" }}>
-            <input
-              type="email"
-              placeholder="Your email address"
-              style={{ flex: 1, background: "rgba(255,255,255,0.05)", border: "1px solid rgba(255,255,255,0.1)", borderRight: "none", borderRadius: "60px 0 0 60px", padding: "16px 24px", fontSize: "14px", color: "white", outline: "none", fontFamily: "var(--font-accent)" }}
-            />
-            <button className="btn-primary" style={{ borderRadius: "0 60px 60px 0", whiteSpace: "nowrap" }}>
-              Subscribe
-            </button>
+    <footer ref={ref} id="footer" style={{ width: "100%", background: "#070707", color: "white", padding: "40px 24px 0" }}>
+      
+      {/* Main Dark Gray Container */}
+      <motion.div
+        initial={{ opacity: 0, y: 40 }}
+        animate={isInView ? { opacity: 1, y: 0 } : {}}
+        transition={{ duration: 0.8 }}
+        style={{
+          maxWidth: "1400px",
+          margin: "0 auto",
+          background: "#3A3A3A",
+          borderRadius: "16px",
+          padding: "60px 40px",
+          display: "flex",
+          flexDirection: "column",
+          gap: "60px"
+        }}
+      >
+        {/* Top Section: 4 Columns */}
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-10">
+          
+          {/* Col 1: Brand & Newsletter (spans 4 cols) */}
+          <div className="lg:col-span-4 flex flex-col items-start">
+            <div className="flex items-center gap-4 mb-6">
+              <div className="w-16 h-16 bg-black rounded-full flex items-center justify-center p-2 border border-white/10">
+                <img src="/logo.png" alt="Vellari" className="w-full h-auto object-contain" />
+              </div>
+              <span className="text-4xl font-black tracking-widest font-[family-name:var(--font-body)]">VELLARI</span>
+            </div>
+            
+            <p className="font-bold text-sm mb-6 max-w-[280px] leading-snug">
+              "Bold snacks. New drops. Deals you'll want first dibs on."
+            </p>
+            
+            <div className="flex bg-white rounded-full p-1 w-full max-w-[320px]">
+              <input
+                type="email"
+                placeholder="We don't spam!"
+                className="flex-1 bg-transparent text-black px-4 outline-none text-sm font-medium placeholder:text-gray-400"
+              />
+              <button className="bg-black text-white px-6 py-2 rounded-full text-sm font-bold whitespace-nowrap hover:bg-neutral-800 transition-colors">
+                Subscribe
+              </button>
+            </div>
           </div>
-        </motion.div>
-      </div>
 
-      {/* Main footer — centered */}
-      <div style={{ padding: "60px 24px" }}>
-        <div style={{ maxWidth: "800px", margin: "0 auto", textAlign: "center" }}>
+          {/* Col 2: Quick Links (spans 2 cols) */}
+          <div className="lg:col-span-2">
+            <h4 className="text-lg font-black uppercase tracking-wider mb-6 font-[family-name:var(--font-body)]">Quick Links</h4>
+            <ul className="flex flex-col gap-4">
+              {quickLinks.map((link) => (
+                <li key={link.label}>
+                  <a href={link.href} className="text-sm text-neutral-200 hover:text-white transition-colors">
+                    {link.label}
+                  </a>
+                </li>
+              ))}
+            </ul>
+          </div>
 
-          {/* Brand */}
-          <button
-            onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
-            style={{ background: "none", border: "none", cursor: "pointer", marginBottom: "20px" }}
-          >
-            <span style={{ fontSize: "28px", fontWeight: "700", letterSpacing: "4px", color: "#FFF6E0" }}>VELLARI</span>
-          </button>
+          {/* Col 3: Our Policies (spans 2 cols) */}
+          <div className="lg:col-span-2">
+            <h4 className="text-lg font-black uppercase tracking-wider mb-6 font-[family-name:var(--font-body)]">Our Policies</h4>
+            <ul className="flex flex-col gap-4">
+              {policies.map((link) => (
+                <li key={link.label}>
+                  <a href={link.href} className="text-sm text-neutral-200 hover:text-white transition-colors">
+                    {link.label}
+                  </a>
+                </li>
+              ))}
+            </ul>
+          </div>
 
-          <p style={{ color: "#8B7355", fontSize: "14px", lineHeight: "1.7", maxWidth: "400px", margin: "0 auto 24px", textAlign: "center" }}>
-            We don&apos;t do boring. We roast, season and flirt with flavours.
-            Vellari Makhana is your crunchy partner in every mood.
-          </p>
-
-          {/* Social icons */}
-          <div style={{ display: "flex", justifyContent: "center", gap: "12px", marginBottom: "24px" }}>
-            {socialLinks.map((social) => (
-              <a
-                key={social.label}
-                href={social.href}
-                target="_blank"
-                rel="noopener noreferrer"
-                aria-label={social.label}
-                style={{ width: "40px", height: "40px", borderRadius: "50%", border: "1px solid rgba(255,255,255,0.1)", display: "flex", alignItems: "center", justifyContent: "center", transition: "all 0.3s" }}
-              >
-                <social.icon style={{ width: "16px", height: "16px", color: "rgba(255,255,255,0.5)" }} />
+          {/* Col 4: Get In Touch (spans 4 cols) */}
+          <div className="lg:col-span-4">
+            <h4 className="text-lg font-black uppercase tracking-wider mb-6 font-[family-name:var(--font-body)]">Get In Touch</h4>
+            <div className="flex flex-col gap-5">
+              <a href="tel:+919911470022" className="flex items-center gap-3 text-sm text-neutral-200 hover:text-white transition-colors">
+                <Phone className="w-5 h-5" />
+                +91-9911470022
               </a>
-            ))}
-          </div>
-
-          {/* Contact */}
-          <div style={{ display: "flex", justifyContent: "center", gap: "24px", flexWrap: "wrap", marginBottom: "48px" }}>
-            <a href="mailto:hello@vellari.com" style={{ display: "flex", alignItems: "center", gap: "6px", fontSize: "12px", color: "#8B7355", textDecoration: "none" }}>
-              <Mail style={{ width: "14px", height: "14px" }} /> hello@vellari.com
-            </a>
-            <span style={{ display: "flex", alignItems: "center", gap: "6px", fontSize: "12px", color: "#8B7355" }}>
-              <MapPin style={{ width: "14px", height: "14px" }} /> Gwalior, Madhya Pradesh, India
-            </span>
-          </div>
-
-          {/* Link columns */}
-          <div style={{ display: "flex", justifyContent: "center", gap: "64px", flexWrap: "wrap", marginBottom: "48px" }}>
-            <div style={{ textAlign: "center" }}>
-              <h4 style={{ fontSize: "12px", fontFamily: "var(--font-accent)", letterSpacing: "4px", color: "#FFF6E0", textTransform: "uppercase", marginBottom: "20px" }}>
-                Shop
-              </h4>
-              <ul style={{ listStyle: "none", padding: 0, display: "flex", flexDirection: "column", gap: "12px", alignItems: "center" }}>
-                {footerLinks.shop.map((link) => (
-                  <li key={link.label}>
-                    <a href={link.href} style={{ fontSize: "14px", color: "#8B7355", textDecoration: "none", display: "flex", alignItems: "center", gap: "4px" }}>
-                      {link.label}
-                      <ArrowUpRight style={{ width: "12px", height: "12px", opacity: 0 }} />
-                    </a>
-                  </li>
+              <div className="flex items-center gap-3 text-sm text-neutral-200">
+                <Clock className="w-5 h-5" />
+                'Monday to Friday (10am - 6pm)'
+              </div>
+              <a href="mailto:hello@vellari.com" className="flex items-center gap-3 text-sm text-neutral-200 hover:text-white transition-colors">
+                <Mail className="w-5 h-5" />
+                hello@vellari.com
+              </a>
+              
+              <div className="flex items-center gap-3 mt-2">
+                {[
+                  { icon: Facebook, href: "#" },
+                  { icon: Twitter, href: "#" }, // Using Twitter for X icon
+                  { icon: Instagram, href: "#" },
+                  { icon: Youtube, href: "#" }
+                ].map((social, i) => (
+                  <a key={i} href={social.href} className="w-8 h-8 bg-white text-black rounded-full flex items-center justify-center hover:scale-110 transition-transform">
+                    <social.icon className="w-4 h-4 fill-current" />
+                  </a>
                 ))}
-              </ul>
-            </div>
-
-            <div style={{ textAlign: "center" }}>
-              <h4 style={{ fontSize: "12px", fontFamily: "var(--font-accent)", letterSpacing: "4px", color: "#FFF6E0", textTransform: "uppercase", marginBottom: "20px" }}>
-                Support
-              </h4>
-              <ul style={{ listStyle: "none", padding: 0, display: "flex", flexDirection: "column", gap: "12px", alignItems: "center" }}>
-                {footerLinks.support.map((link) => (
-                  <li key={link.label}>
-                    <a href={link.href} style={{ fontSize: "14px", color: "#8B7355", textDecoration: "none", display: "flex", alignItems: "center", gap: "4px" }}>
-                      {link.label}
-                      <ArrowUpRight style={{ width: "12px", height: "12px", opacity: 0 }} />
-                    </a>
-                  </li>
-                ))}
-              </ul>
+              </div>
             </div>
           </div>
+
+        </div>
+
+        {/* Bottom Disclaimer */}
+        <div className="border-t border-white/10 pt-6">
+          <p className="text-[13px] text-neutral-300 leading-relaxed font-medium">
+            Consumers may note that the Company is not affiliated with PVR Inox Limited with effect from 29th January, 2026 and PVR Inox Limited is not involved in manufacturing, quality control or marketing of the Company's products.
+          </p>
+        </div>
+      </motion.div>
+
+      {/* Copyright & Floating Products */}
+      <div className="relative pt-10 pb-6 text-center max-w-[1400px] mx-auto overflow-hidden">
+        <p className="text-sm font-medium z-10 relative">
+          Copyright © 2026, Vellari. All rights reserved.
+        </p>
+        
+        {/* Jars peaking from bottom */}
+        <div className="flex justify-center items-end gap-2 sm:gap-6 mt-6 translate-y-4">
+          <Image src="/products/3.png" alt="Product" width={100} height={100} className="w-20 sm:w-28 h-auto object-contain hover:-translate-y-4 transition-transform duration-500" />
+          <Image src="/products/1.png" alt="Product" width={120} height={120} className="w-24 sm:w-32 h-auto object-contain z-10 hover:-translate-y-4 transition-transform duration-500 drop-shadow-2xl" />
+          <Image src="/products/2.png" alt="Product" width={100} height={100} className="w-20 sm:w-28 h-auto object-contain hover:-translate-y-4 transition-transform duration-500" />
         </div>
       </div>
 
-      {/* Bottom bar — centered */}
-      <div style={{ borderTop: "1px solid rgba(255,255,255,0.05)", padding: "24px", textAlign: "center" }}>
-        <p style={{ fontSize: "12px", color: "#8B7355", marginBottom: "6px" }}>
-          © {new Date().getFullYear()} Vellari. All rights reserved. Made with ♡ in India.
-        </p>
-        <span style={{ fontSize: "10px", letterSpacing: "4px", color: "rgba(139,115,85,0.5)", textTransform: "uppercase", fontFamily: "var(--font-accent)" }}>
-          Roasted · Not Fried
-        </span>
-      </div>
     </footer>
   );
 }
