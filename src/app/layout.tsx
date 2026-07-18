@@ -60,6 +60,7 @@ export default function RootLayout({
           href="https://fonts.gstatic.com"
           crossOrigin="anonymous"
         />
+        <link rel="preload" href="/logo.png" as="image" />
       </head>
       <body className="min-h-screen bg-v-cream text-v-black antialiased overflow-x-hidden">
         {children}
