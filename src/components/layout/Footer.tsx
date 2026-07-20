@@ -77,19 +77,20 @@ export default function Footer() {
           <div className="flex flex-col items-start max-w-sm">
             <div className="flex items-center gap-4 mb-8">
               <div className="w-20 h-20 bg-black flex items-center justify-center p-2 rounded-xl border border-white/10 shrink-0 shadow-lg">
-                <img src="/footer-logo.png" alt="Vellari" className="w-full h-auto object-contain drop-shadow-md" />
+                <Image src="/footer-logo.png" alt="Vellari" width={80} height={80} loading="lazy" className="w-full h-auto object-contain drop-shadow-md" />
               </div>
-              <span className="text-5xl lg:text-6xl font-black tracking-widest font-[family-name:var(--font-body)]">VELLARI</span>
+              <span className="text-4xl md:text-5xl lg:text-6xl font-black tracking-widest font-[family-name:var(--font-body)]">VELLARI</span>
             </div>
             
             <p className="font-bold text-[15px] mb-10 mt-2 max-w-[300px] leading-relaxed text-neutral-200">
-              "Bold snacks. New drops. Deals you'll want first dibs on."
+              &quot;Bold snacks. New drops. Deals you&apos;ll want first dibs on.&quot;
             </p>
             
             <div className="flex bg-white rounded-full p-1.5 w-full max-w-[340px] shadow-inner mt-2">
               <input
                 type="email"
                 placeholder="We don't spam!"
+                aria-label="Email address for newsletter"
                 className="flex-1 bg-transparent text-black px-5 py-2 outline-none text-[15px] font-medium placeholder:text-gray-500"
               />
               <button className="bg-black text-white px-8 py-2.5 rounded-full text-[15px] font-black tracking-wide whitespace-nowrap hover:bg-neutral-800 transition-colors shadow-md">
@@ -136,7 +137,7 @@ export default function Footer() {
               </a>
               <div className="flex items-center gap-3 text-[15px] font-medium text-neutral-300">
                 <Clock className="w-5 h-5 text-v-gold" />
-                'Monday to Friday (10am - 6pm)'
+                Monday to Friday (10am - 6pm)
               </div>
               <a href="mailto:hello@vellari.com" className="flex items-center gap-3 text-[15px] font-medium text-neutral-300 hover:text-white transition-colors">
                 <Mail className="w-5 h-5 text-v-gold" />
@@ -145,13 +146,13 @@ export default function Footer() {
               
               <div className="flex items-center gap-4 mt-4">
                 {[
-                  { icon: FacebookIcon, href: "#" },
-                  { icon: TwitterIcon, href: "#" },
-                  { icon: InstagramIcon, href: "#" },
-                  { icon: YoutubeIcon, href: "#" }
+                  { icon: FacebookIcon, href: "#", label: "Facebook" },
+                  { icon: TwitterIcon, href: "#", label: "Twitter" },
+                  { icon: InstagramIcon, href: "#", label: "Instagram" },
+                  { icon: YoutubeIcon, href: "#", label: "YouTube" }
                 ].map((social, i) => (
-                  <a key={i} href={social.href} className="w-10 h-10 bg-white text-black rounded-full flex items-center justify-center hover:scale-110 hover:bg-v-gold hover:text-white shadow-lg transition-all">
-                    <social.icon className="w-5 h-5 fill-current" />
+                  <a key={i} href={social.href} aria-label={social.label} className="w-11 h-11 bg-white text-black rounded-full flex items-center justify-center hover:scale-110 hover:bg-v-gold hover:text-white shadow-lg transition-all">
+                    <social.icon className="w-5 h-5 fill-current" aria-hidden="true" />
                   </a>
                 ))}
               </div>

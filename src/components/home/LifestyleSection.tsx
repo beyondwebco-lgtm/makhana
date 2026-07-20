@@ -31,7 +31,7 @@ export default function LifestyleSection() {
         </motion.div>
 
         {/* Symmetrical 3-column grid — centered */}
-        <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: "20px" }}>
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
           {[
             { src: "/lifestyle/1.png", alt: "Vellari Classic Salted", delay: 0.2 },
             { src: "/products/Bowl.jpeg", alt: "All Flavours Bowl", delay: 0.1, caption: "All-Natural Goodness." },

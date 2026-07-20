@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState, useRef } from "react";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion } from "framer-motion";
 import SoftAurora from "@/components/ui/SoftAurora";
 import type { ProductTheme } from "@/lib/productThemes";
 
@@ -85,48 +85,15 @@ export default function AnimatedFlavourBackground({
     const video = videoRef.current;
     if (!video) return;
 
-    console.log("Video diagnostic: Initializing video listener", {
-      src: video.src,
-      readyState: video.readyState,
-      networkState: video.networkState,
-      paused: video.paused
-    });
-
     const handleLoadedMetadata = () => {
       if (video) {
-        console.log("Video diagnostic: Metadata loaded", {
-          duration: video.duration,
-          videoWidth: video.videoWidth,
-          videoHeight: video.videoHeight
-        });
         targetTimeRef.current = video.duration * scrollProgress;
       }
     };
 
-    const handlePlay = () => console.log("Video diagnostic: Play event fired");
-    const handlePause = () => console.log("Video diagnostic: Pause event fired");
-    const handleWaiting = () => console.log("Video diagnostic: Video waiting for frames");
-    const handlePlaying = () => console.log("Video diagnostic: Video playing");
-    const handleCanPlay = () => console.log("Video diagnostic: Can play video", { readyState: video.readyState });
-    
-    const handleError = (e: any) => {
-      console.error("Video diagnostic: Load error occurred!", {
-        error: video.error,
-        networkState: video.networkState,
-        readyState: video.readyState
-      });
-    };
-
     video.addEventListener("loadedmetadata", handleLoadedMetadata);
-    video.addEventListener("play", handlePlay);
-    video.addEventListener("pause", handlePause);
-    video.addEventListener("waiting", handleWaiting);
-    video.addEventListener("playing", handlePlaying);
-    video.addEventListener("canplay", handleCanPlay);
-    video.addEventListener("error", handleError);
 
     let rafId: number;
-    let logCounter = 0;
     const updateVideoTime = () => {
       if (video && video.duration) {
         const diff = targetTimeRef.current - currentTimeRef.current;
@@ -134,17 +101,6 @@ export default function AnimatedFlavourBackground({
           currentTimeRef.current += diff * 0.08; // smooth lerp
           currentTimeRef.current = Math.max(0, Math.min(video.duration, currentTimeRef.current));
           video.currentTime = currentTimeRef.current;
-        }
-
-        // Log status every 120 frames to avoid flooding
-        logCounter++;
-        if (logCounter % 120 === 0) {
-          console.log("Video loop diagnostic:", {
-            currentTime: video.currentTime,
-            targetTime: targetTimeRef.current,
-            readyState: video.readyState,
-            networkState: video.networkState
-          });
         }
       }
       rafId = requestAnimationFrame(updateVideoTime);
@@ -155,12 +111,6 @@ export default function AnimatedFlavourBackground({
     return () => {
       if (video) {
         video.removeEventListener("loadedmetadata", handleLoadedMetadata);
-        video.removeEventListener("play", handlePlay);
-        video.removeEventListener("pause", handlePause);
-        video.removeEventListener("waiting", handleWaiting);
-        video.removeEventListener("playing", handlePlaying);
-        video.removeEventListener("canplay", handleCanPlay);
-        video.removeEventListener("error", handleError);
       }
       cancelAnimationFrame(rafId);
     };

@@ -1,24 +1,37 @@
 "use client";
 
-import { useRef, useEffect, useCallback } from "react";
-import { motion } from "framer-motion";
+import { useRef, useEffect, useCallback, useSyncExternalStore } from "react";
+import { motion, useReducedMotion } from "framer-motion";
 import Image from "next/image";
 import { ArrowRight, ChevronDown } from "lucide-react";
-import WarningMarquee from "./WarningMarquee";
-import SoftAurora from "../ui/SoftAurora";
+import dynamic from "next/dynamic";
+
+// Lazy-load non-critical animations and heavy components to prioritize Hero LCP
+const WarningMarquee = dynamic(() => import("./WarningMarquee"), { ssr: false });
+const SoftAurora = dynamic(() => import("../ui/SoftAurora"), { ssr: false });
+
+const emptySubscribe = () => () => {};
 
 export default function Hero() {
   const parallaxRef = useRef<HTMLDivElement>(null);
   const mouseX = useRef(0);
   const mouseY = useRef(0);
   const rafId = useRef<number>(0);
+  const prefersReducedMotion = useReducedMotion();
+  const isHydrated = useSyncExternalStore(
+    emptySubscribe,
+    () => true,
+    () => false
+  );
 
   const handleMouseMove = useCallback((e: MouseEvent) => {
+    if (prefersReducedMotion) return;
     mouseX.current = (e.clientX / window.innerWidth - 0.5) * 2;
     mouseY.current = (e.clientY / window.innerHeight - 0.5) * 2;
-  }, []);
+  }, [prefersReducedMotion]);
 
   useEffect(() => {
+    if (prefersReducedMotion) return;
     const mq = window.matchMedia("(pointer: fine)");
     if (!mq.matches) return;
     window.addEventListener("mousemove", handleMouseMove);
@@ -35,11 +48,30 @@ export default function Hero() {
       window.removeEventListener("mousemove", handleMouseMove);
       cancelAnimationFrame(rafId.current);
     };
-  }, [handleMouseMove]);
+  }, [handleMouseMove, prefersReducedMotion]);
 
   const scrollToAnimation = () => {
     document.getElementById("scroll-animation")?.scrollIntoView({ behavior: "smooth" });
   };
+
+  // Entrance animations are simplified if reduced motion is preferred
+  const textAnimationProps = {
+    initial: { opacity: prefersReducedMotion ? 1 : 0, y: prefersReducedMotion ? 0 : 60 },
+    animate: { opacity: 1, y: 0 },
+  };
+
+  const badgeAnimationProps = {
+    initial: { opacity: prefersReducedMotion ? 1 : 0, y: prefersReducedMotion ? 0 : 20 },
+    animate: { opacity: 1, y: 0 },
+  };
+
+  const jarAnimationProps = {
+    initial: { opacity: prefersReducedMotion ? 1 : 0, x: prefersReducedMotion ? 0 : 80, scale: prefersReducedMotion ? 1 : 0.9 },
+    animate: { opacity: 1, x: 0, scale: 1 },
+  };
+
+  const floatTransition = prefersReducedMotion ? {} : { duration: 4, repeat: Infinity, ease: "easeInOut" as const };
+  const floatY = prefersReducedMotion ? 0 : [0, -18, 0];
 
   return (
     <section
@@ -54,28 +86,31 @@ export default function Hero() {
         background: "#070707",
       }}
     >
-      {/* Ambient animated aurora background */}
+      {/* Ambient animated aurora background - Only load after hydration to not block LCP */}
       <div style={{ position: "absolute", inset: 0, opacity: 0.7, pointerEvents: "none", zIndex: 1 }}>
-        <SoftAurora
-          speed={0.4}
-          scale={1.3}
-          brightness={0.9}
-          color1="#D4961A"
-          color2="#7B4FBF"
-          noiseFrequency={2.2}
-          noiseAmplitude={0.8}
-          bandHeight={0.5}
-          bandSpread={1.2}
-          octaveDecay={0.1}
-          layerOffset={0.2}
-          colorSpeed={0.6}
-          enableMouseInteraction={true}
-          mouseInfluence={0.3}
-        />
+        {isHydrated && !prefersReducedMotion && (
+          <SoftAurora
+            speed={0.4}
+            scale={1.3}
+            brightness={0.9}
+            color1="#D4961A"
+            color2="#7B4FBF"
+            noiseFrequency={2.2}
+            noiseAmplitude={0.8}
+            bandHeight={0.5}
+            bandSpread={1.2}
+            octaveDecay={0.1}
+            layerOffset={0.2}
+            colorSpeed={0.6}
+            enableMouseInteraction={true}
+            mouseInfluence={0.3}
+          />
+        )}
       </div>
 
       {/* Two-column layout */}
       <div
+        ref={parallaxRef}
         style={{
           position: "relative",
           zIndex: 20,
@@ -94,8 +129,7 @@ export default function Hero() {
 
           {/* Eyebrow badge */}
           <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
+            {...badgeAnimationProps}
             transition={{ duration: 0.8, delay: 0.3 }}
             style={{ marginBottom: "32px" }}
           >
@@ -115,7 +149,7 @@ export default function Hero() {
                 fontFamily: "var(--font-accent)",
               }}
             >
-              <span style={{ width: "6px", height: "6px", borderRadius: "50%", background: "#D4961A", display: "inline-block" }} className="animate-pulse" />
+              <span style={{ width: "6px", height: "6px", borderRadius: "50%", background: "#D4961A", display: "inline-block" }} className={prefersReducedMotion ? "" : "animate-pulse"} />
               Premium Roasted Makhana
             </span>
           </motion.div>
@@ -128,12 +162,11 @@ export default function Hero() {
               lineHeight: "0.92",
               letterSpacing: "-1px",
               marginBottom: "28px",
-              fontSize: "clamp(48px, 6.5vw, 110px)",
+              fontSize: "clamp(36px, 6.5vw, 110px)",
             }}
           >
             <motion.span
-              initial={{ opacity: 0, y: 60 }}
-              animate={{ opacity: 1, y: 0 }}
+              {...textAnimationProps}
               transition={{ duration: 1, delay: 0.5, ease: [0.25, 0.4, 0.25, 1] }}
               style={{ display: "block" }}
               className="gradient-gold"
@@ -141,8 +174,7 @@ export default function Hero() {
               Flirty
             </motion.span>
             <motion.span
-              initial={{ opacity: 0, y: 60 }}
-              animate={{ opacity: 1, y: 0 }}
+              {...textAnimationProps}
               transition={{ duration: 1, delay: 0.65, ease: [0.25, 0.4, 0.25, 1] }}
               style={{ display: "block" }}
               className="gradient-gold"
@@ -150,16 +182,14 @@ export default function Hero() {
               Flavours.
             </motion.span>
             <motion.span
-              initial={{ opacity: 0, y: 60 }}
-              animate={{ opacity: 1, y: 0 }}
+              {...textAnimationProps}
               transition={{ duration: 1, delay: 0.8, ease: [0.25, 0.4, 0.25, 1] }}
               style={{ display: "block", color: "#FFF6E0", marginTop: "8px" }}
             >
               Crunchy
             </motion.span>
             <motion.span
-              initial={{ opacity: 0, y: 60 }}
-              animate={{ opacity: 1, y: 0 }}
+              {...textAnimationProps}
               transition={{ duration: 1, delay: 0.95, ease: [0.25, 0.4, 0.25, 1] }}
               style={{ display: "block", color: "#FFF6E0" }}
             >
@@ -169,8 +199,7 @@ export default function Hero() {
 
           {/* Subtitle */}
           <motion.p
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
+            {...badgeAnimationProps}
             transition={{ duration: 0.8, delay: 1.1 }}
             style={{
               fontSize: "16px",
@@ -186,8 +215,7 @@ export default function Hero() {
 
           {/* Badges row */}
           <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
+            {...badgeAnimationProps}
             transition={{ duration: 0.8, delay: 1.2 }}
             style={{ display: "flex", flexWrap: "wrap", gap: "10px", marginBottom: "40px" }}
           >
@@ -213,8 +241,7 @@ export default function Hero() {
 
           {/* CTAs */}
           <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
+            {...badgeAnimationProps}
             transition={{ duration: 0.8, delay: 1.35 }}
             style={{ display: "flex", gap: "16px", flexWrap: "wrap" }}
           >
@@ -239,8 +266,7 @@ export default function Hero() {
 
         {/* RIGHT — Product Jar */}
         <motion.div
-          initial={{ opacity: 0, x: 80, scale: 0.9 }}
-          animate={{ opacity: 1, x: 0, scale: 1 }}
+          {...jarAnimationProps}
           transition={{ duration: 1.2, delay: 0.6, ease: [0.25, 0.4, 0.25, 1] }}
           style={{
             position: "relative",
@@ -264,8 +290,8 @@ export default function Hero() {
 
           {/* Float animation wrapper */}
           <motion.div
-            animate={{ y: [0, -18, 0] }}
-            transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
+            animate={{ y: floatY }}
+            transition={floatTransition}
             style={{ position: "relative", zIndex: 1, width: "100%", maxWidth: "500px" }}
           >
             <Image
@@ -273,14 +299,16 @@ export default function Hero() {
               alt="Vellari Soulmate — Cream & Onion"
               width={500}
               height={500}
+              sizes="(max-width: 768px) 100vw, 50vw"
               style={{ width: "100%", height: "auto", objectFit: "contain", filter: "drop-shadow(0 40px 80px rgba(0,0,0,0.6))" }}
               priority
+              fetchPriority="high"
             />
           </motion.div>
 
           {/* Flavour tag */}
           <motion.div
-            initial={{ opacity: 0, x: 30 }}
+            initial={{ opacity: prefersReducedMotion ? 1 : 0, x: prefersReducedMotion ? 0 : 30 }}
             animate={{ opacity: 1, x: 0 }}
             transition={{ duration: 0.8, delay: 1.4 }}
             style={{
@@ -305,11 +333,12 @@ export default function Hero() {
       </div>
 
       {/* Scroll indicator */}
-      <motion.div
-        initial={{ opacity: 0 }}
+      <motion.button
+        initial={{ opacity: prefersReducedMotion ? 1 : 0 }}
         animate={{ opacity: 1 }}
         transition={{ delay: 2, duration: 1 }}
         onClick={scrollToAnimation}
+        aria-label="Scroll to explore"
         style={{
           position: "absolute",
           bottom: "32px",
@@ -321,18 +350,21 @@ export default function Hero() {
           alignItems: "center",
           gap: "8px",
           cursor: "pointer",
+          background: "none",
+          border: "none",
+          outline: "none"
         }}
       >
         <span style={{ fontSize: "10px", letterSpacing: "4px", color: "#8B7355", textTransform: "uppercase", fontFamily: "var(--font-accent)" }}>
           Scroll to explore
         </span>
-        <motion.div animate={{ y: [0, 8, 0] }} transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}>
-          <ChevronDown style={{ width: "16px", height: "16px", color: "#8B7355" }} />
+        <motion.div animate={{ y: floatY }} transition={floatTransition}>
+          <ChevronDown style={{ width: "16px", height: "16px", color: "#8B7355" }} aria-hidden="true" />
         </motion.div>
-      </motion.div>
+      </motion.button>
 
-      {/* Warning Marquee */}
-      <WarningMarquee />
+      {/* Warning Marquee - Lazy loaded after hydration */}
+      {isHydrated && !prefersReducedMotion && <WarningMarquee />}
 
       {/* Bottom gradient */}
       <div style={{ position: "absolute", bottom: 0, left: 0, right: 0, height: "120px", background: "linear-gradient(to top, #FFF6E0, transparent)", zIndex: 4, pointerEvents: "none" }} />

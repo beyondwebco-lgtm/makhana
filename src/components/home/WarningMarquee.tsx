@@ -1,16 +1,6 @@
 "use client";
 
-import { motion } from "framer-motion";
-
 export default function WarningMarquee() {
-  const phrases = [
-    "WARNING: HIGHLY ADDICTIVE",
-    "THE PERFECT MATCH",
-    "FLIRT WITH FLAVOUR",
-    "MIDNIGHT CRAVINGS CURED",
-    "BINGE TOGETHER",
-    "CRUNCHY FEELINGS",
-  ];
 
   const textString = "⚠️ WARNING: HIGHLY ADDICTIVE ♡ THE PERFECT MATCH ♡ FLIRT WITH FLAVOUR ♡ MIDNIGHT CRAVINGS CURED ♡ BINGE TOGETHER ♡ CRUNCHY FEELINGS ♡ ".repeat(10);
 

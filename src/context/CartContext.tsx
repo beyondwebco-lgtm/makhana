@@ -28,31 +28,25 @@ interface CartContextType {
 const CartContext = createContext<CartContextType | undefined>(undefined);
 
 export function CartProvider({ children }: { children: React.ReactNode }) {
-  const [cart, setCart] = useState<CartItem[]>([]);
-  const [isInitialized, setIsInitialized] = useState(false);
-
-  // Load cart from localStorage on mount
-  useEffect(() => {
+  const [cart, setCart] = useState<CartItem[]>(() => {
+    if (typeof window === "undefined") return [];
     try {
       const savedCart = localStorage.getItem("vellari_cart");
-      if (savedCart) {
-        setCart(JSON.parse(savedCart));
-      }
+      return savedCart ? JSON.parse(savedCart) : [];
     } catch (e) {
       console.error("Failed to load cart from localStorage", e);
+      return [];
     }
-    setIsInitialized(true);
-  }, []);
+  });
 
   // Save cart to localStorage whenever it changes
   useEffect(() => {
-    if (!isInitialized) return;
     try {
       localStorage.setItem("vellari_cart", JSON.stringify(cart));
     } catch (e) {
       console.error("Failed to save cart to localStorage", e);
     }
-  }, [cart, isInitialized]);
+  }, [cart]);
 
   const addToCart = (slug: string, quantity: number) => {
     const product = products.find((p) => p.slug === slug);
@@ -133,9 +127,9 @@ export function useCart() {
   if (!context) {
     return {
       cart: [],
-      addToCart: (slug: string, qty: number) => {},
-      removeFromCart: (slug: string) => {},
-      updateQuantity: (slug: string, qty: number) => {},
+      addToCart: (_slug: string, _qty: number) => {},
+      removeFromCart: (_slug: string) => {},
+      updateQuantity: (_slug: string, _qty: number) => {},
       clearCart: () => {},
       cartCount: 0,
       subtotal: 0,

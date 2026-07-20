@@ -3,11 +3,14 @@
 import { useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import Link from "next/link";
+import Image from "next/image";
 import { Search, ShoppingBag, Heart, User, Menu, X } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useCart } from "@/context/CartContext";
 import CartDrawer from "./CartDrawer";
 import { usePathname, useRouter } from "next/navigation";
+import { useFocusTrap } from "@/hooks/useFocusTrap";
+import { useRef } from "react";
 
 const navLinks = [
   { label: "Home", href: "/" },
@@ -27,6 +30,21 @@ export default function Navbar() {
   const { cartCount } = useCart();
   const pathname = usePathname();
   const router = useRouter();
+  
+  const mobileMenuRef = useRef<HTMLDivElement>(null);
+  useFocusTrap(mobileMenuRef, mobileOpen);
+
+  useEffect(() => {
+    const handleEscape = (e: KeyboardEvent) => {
+      if (e.key === "Escape") {
+        setMobileOpen(false);
+      }
+    };
+    if (mobileOpen) {
+      document.addEventListener("keydown", handleEscape);
+    }
+    return () => document.removeEventListener("keydown", handleEscape);
+  }, [mobileOpen]);
 
   useEffect(() => {
     const handleCartAdded = () => {
@@ -112,9 +130,12 @@ export default function Navbar() {
         <nav className="max-w-[1400px] mx-auto px-6 flex items-center justify-between">
           {/* Logo */}
           <Link href="/" className="relative group flex items-center z-50 shrink-0">
-            <img
+            <Image
               src="/logo.png"
               alt="Vellari Logo"
+              width={160}
+              height={80}
+              priority
               className={cn(
                 "w-auto object-contain transition-all duration-500",
                 scrolled ? "h-14 md:h-18" : "h-20 md:h-24",
@@ -157,7 +178,7 @@ export default function Navbar() {
               <button
                 key={label}
                 className={cn(
-                  "w-10 h-10 items-center justify-center rounded-full transition-all duration-300",
+                  "w-11 h-11 items-center justify-center rounded-full transition-all duration-300",
                   hideOnMobile ? "hidden md:flex" : "flex",
                   pastHero && scrolled
                     ? "hover:bg-v-black/5"
@@ -182,7 +203,7 @@ export default function Navbar() {
               animate={badgeBounce ? { scale: [1, 1.3, 1] } : {}}
               transition={{ duration: 0.3 }}
               className={cn(
-                "relative w-10 h-10 flex items-center justify-center rounded-full transition-all duration-300",
+                "relative w-11 h-11 flex items-center justify-center rounded-full transition-all duration-300",
                 pastHero && scrolled
                   ? "hover:bg-v-black/5"
                   : "hover:bg-white/10"
@@ -215,7 +236,7 @@ export default function Navbar() {
             <button
               onClick={() => setMobileOpen(!mobileOpen)}
               className={cn(
-                "lg:hidden w-10 h-10 flex items-center justify-center rounded-full transition-all duration-300",
+                "lg:hidden w-11 h-11 flex items-center justify-center rounded-full transition-all duration-300",
                 pastHero && scrolled && !mobileOpen
                   ? "hover:bg-v-black/5"
                   : "hover:bg-white/10"
@@ -241,6 +262,10 @@ export default function Navbar() {
       <AnimatePresence>
         {mobileOpen && (
           <motion.div
+            ref={mobileMenuRef}
+            role="dialog"
+            aria-modal="true"
+            aria-label="Mobile Navigation"
             initial={{ opacity: 0, y: -20 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -20 }}

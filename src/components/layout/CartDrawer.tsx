@@ -6,6 +6,7 @@ import { X, Plus, Minus, Trash2, ArrowRight, ShoppingBag } from "lucide-react";
 import { useCart } from "@/context/CartContext";
 import Image from "next/image";
 import Link from "next/link";
+import { useFocusTrap } from "@/hooks/useFocusTrap";
 
 interface CartDrawerProps {
   isOpen: boolean;
@@ -15,20 +16,28 @@ interface CartDrawerProps {
 export default function CartDrawer({ isOpen, onClose }: CartDrawerProps) {
   const { cart, updateQuantity, removeFromCart, subtotal, shipping, tax, total } = useCart();
   const drawerRef = useRef<HTMLDivElement>(null);
+  useFocusTrap(drawerRef, isOpen);
 
-  // Close on outside click
+  // Close on outside click and Escape
   useEffect(() => {
     function handleClickOutside(event: MouseEvent) {
       if (drawerRef.current && !drawerRef.current.contains(event.target as Node)) {
         onClose();
       }
     }
+    function handleEscape(event: KeyboardEvent) {
+      if (event.key === "Escape") {
+        onClose();
+      }
+    }
     if (isOpen) {
       document.addEventListener("mousedown", handleClickOutside);
+      document.addEventListener("keydown", handleEscape);
       document.body.style.overflow = "hidden"; // Prevent background scroll
     }
     return () => {
       document.removeEventListener("mousedown", handleClickOutside);
+      document.removeEventListener("keydown", handleEscape);
       document.body.style.overflow = "";
     };
   }, [isOpen, onClose]);
@@ -49,6 +58,9 @@ export default function CartDrawer({ isOpen, onClose }: CartDrawerProps) {
           {/* Drawer Panel */}
           <motion.div
             ref={drawerRef}
+            role="dialog"
+            aria-modal="true"
+            aria-label="Shopping Cart"
             initial={{ x: "100%" }}
             animate={{ x: 0 }}
             exit={{ x: "100%" }}
@@ -58,7 +70,7 @@ export default function CartDrawer({ isOpen, onClose }: CartDrawerProps) {
             {/* Header */}
             <div className="flex items-center justify-between border-b border-white/10 p-6">
               <div className="flex items-center gap-3">
-                <ShoppingBag className="h-5 w-5 text-[var(--v-gold)]" />
+                <ShoppingBag className="h-5 w-5 text-[var(--v-gold)]" aria-hidden="true" />
                 <h2 className="text-xl font-bold uppercase tracking-wider font-[family-name:var(--font-accent)]">Your Cart</h2>
                 {cart.length > 0 && (
                   <span className="rounded-full bg-[var(--v-gold)] px-2.5 py-0.5 text-xs font-black text-black">
@@ -68,7 +80,7 @@ export default function CartDrawer({ isOpen, onClose }: CartDrawerProps) {
               </div>
               <button
                 onClick={onClose}
-                className="rounded-full border border-white/10 p-2 text-white/70 hover:bg-white/10 hover:text-white transition-colors"
+                className="rounded-full border border-white/10 w-11 h-11 flex items-center justify-center text-white/70 hover:bg-white/10 hover:text-white transition-colors"
                 aria-label="Close cart"
               >
                 <X className="h-5 w-5" />
@@ -131,23 +143,25 @@ export default function CartDrawer({ isOpen, onClose }: CartDrawerProps) {
                         <div className="flex items-center border border-white/10 rounded-full overflow-hidden bg-white/5">
                           <button
                             onClick={() => updateQuantity(item.slug, item.quantity - 1)}
-                            className="p-2 text-white/70 hover:bg-white/10 hover:text-white transition-colors"
+                            className="w-11 h-11 flex items-center justify-center text-white/70 hover:bg-white/10 hover:text-white transition-colors"
+                            aria-label="Decrease quantity"
                           >
-                            <Minus className="h-3.5 w-3.5" />
+                            <Minus className="h-3.5 w-3.5" aria-hidden="true" />
                           </button>
                           <span className="w-8 text-center text-sm font-bold">{item.quantity}</span>
                           <button
                             onClick={() => updateQuantity(item.slug, item.quantity + 1)}
-                            className="p-2 text-white/70 hover:bg-white/10 hover:text-white transition-colors"
+                            className="w-11 h-11 flex items-center justify-center text-white/70 hover:bg-white/10 hover:text-white transition-colors"
+                            aria-label="Increase quantity"
                           >
-                            <Plus className="h-3.5 w-3.5" />
+                            <Plus className="h-3.5 w-3.5" aria-hidden="true" />
                           </button>
                         </div>
 
                         {/* Remove */}
                         <button
                           onClick={() => removeFromCart(item.slug)}
-                          className="text-white/40 hover:text-red-400 transition-colors p-2"
+                          className="w-11 h-11 flex items-center justify-center text-white/40 hover:text-red-400 transition-colors"
                           aria-label="Remove item"
                         >
                           <Trash2 className="h-4 w-4" />

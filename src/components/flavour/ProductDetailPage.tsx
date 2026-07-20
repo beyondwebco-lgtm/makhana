@@ -3,6 +3,7 @@
 import Link from "next/link";
 import Image from "next/image";
 import { useRef, useEffect, useState } from "react";
+import { useFocusTrap } from "@/hooks/useFocusTrap";
 import {
   motion,
   AnimatePresence,
@@ -118,6 +119,9 @@ export default function ProductDetailPage({
   const [activeImageIndex, setActiveImageIndex] = useState(0);
   const [quantity, setQuantity] = useState(1);
   
+  const lightboxRef = useRef<HTMLDivElement>(null);
+  useFocusTrap(lightboxRef, lightboxIndex !== null);
+  
   const { addToCart } = useCart();
   const { scrollY } = useScroll();
   
@@ -136,8 +140,12 @@ export default function ProductDetailPage({
     const handleKeyDown = (e: KeyboardEvent) => {
       if (e.key === "ArrowLeft") {
         setActiveImageIndex((prev) => (prev === 0 ? galleryImages.length - 1 : prev - 1));
+        setLightboxIndex((prev) => prev !== null ? (prev === 0 ? galleryImages.length - 1 : prev - 1) : null);
       } else if (e.key === "ArrowRight") {
         setActiveImageIndex((prev) => (prev === galleryImages.length - 1 ? 0 : prev + 1));
+        setLightboxIndex((prev) => prev !== null ? (prev === galleryImages.length - 1 ? 0 : prev + 1) : null);
+      } else if (e.key === "Escape") {
+        setLightboxIndex(null);
       }
     };
     window.addEventListener("keydown", handleKeyDown);
@@ -191,7 +199,7 @@ export default function ProductDetailPage({
                 initial={{ opacity: 0, y: -20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.2, duration: 0.6 }}
-                className="fixed left-6 top-6 z-50 md:left-8 md:top-8"
+                className="absolute left-6 top-32 z-50 md:left-10 md:top-36"
               >
                 <Link
                   href="/#products"
@@ -267,8 +275,9 @@ export default function ProductDetailPage({
                           setActiveImageIndex((prev) => (prev === 0 ? galleryImages.length - 1 : prev - 1));
                         }}
                         className="absolute left-4 top-1/2 -translate-y-1/2 rounded-full border border-white/10 bg-black/40 p-2 text-white hover:bg-black/70 transition-colors z-20"
+                        aria-label="Previous image"
                       >
-                        <ChevronLeft className="h-5 w-5" />
+                        <ChevronLeft className="h-5 w-5" aria-hidden="true" />
                       </button>
                       <button
                         onClick={(e) => {
@@ -276,8 +285,9 @@ export default function ProductDetailPage({
                           setActiveImageIndex((prev) => (prev === galleryImages.length - 1 ? 0 : prev + 1));
                         }}
                         className="absolute right-4 top-1/2 -translate-y-1/2 rounded-full border border-white/10 bg-black/40 p-2 text-white hover:bg-black/70 transition-colors z-20"
+                        aria-label="Next image"
                       >
-                        <ChevronRight className="h-5 w-5" />
+                        <ChevronRight className="h-5 w-5" aria-hidden="true" />
                       </button>
                     </motion.div>
 
@@ -305,7 +315,7 @@ export default function ProductDetailPage({
                     Premium Roasted
                   </span>
 
-                  <h1 className="text-5xl md:text-6xl lg:text-7xl font-black text-white tracking-wide mb-4 leading-tight">
+                  <h1 className="text-4xl md:text-6xl lg:text-7xl font-black text-white tracking-wide mb-4 leading-tight">
                     {product.name}
                   </h1>
                   <p
@@ -340,7 +350,7 @@ export default function ProductDetailPage({
                   </div>
 
                   <div className="flex items-end gap-4 mb-12">
-                    <span className="text-5xl font-black text-white">₹{product.price}</span>
+                    <span className="text-4xl md:text-5xl font-black text-white">₹{product.price}</span>
                     <span className="text-2xl line-through text-white/20 mb-1">₹{product.originalPrice}</span>
                     <span className="text-xs bg-green-500/20 text-green-400 border border-green-500/30 px-4 py-1.5 rounded-full font-bold mb-1.5 shadow-[0_0_15px_rgba(74,222,128,0.1)]">
                       Save ₹{product.originalPrice - product.price}
@@ -352,15 +362,17 @@ export default function ProductDetailPage({
                       <button
                         onClick={() => setQuantity((prev) => Math.max(1, prev - 1))}
                         className="h-12 w-12 rounded-full flex items-center justify-center text-white/70 hover:bg-white/10 hover:text-white transition-colors"
+                        aria-label="Decrease quantity"
                       >
-                        <Minus size={16} />
+                        <Minus size={16} aria-hidden="true" />
                       </button>
                       <span className="text-base font-bold w-8 text-center text-white">{quantity}</span>
                       <button
                         onClick={() => setQuantity((prev) => prev + 1)}
                         className="h-12 w-12 rounded-full flex items-center justify-center text-white/70 hover:bg-white/10 hover:text-white transition-colors"
+                        aria-label="Increase quantity"
                       >
-                        <Plus size={16} />
+                        <Plus size={16} aria-hidden="true" />
                       </button>
                     </div>
 
@@ -482,6 +494,10 @@ export default function ProductDetailPage({
                     exit={{ opacity: 0 }}
                     className="fixed inset-0 z-[100] flex items-center justify-center bg-black/90 p-6 backdrop-blur-xl"
                     onClick={() => setLightboxIndex(null)}
+                    role="dialog"
+                    aria-modal="true"
+                    aria-label="Image gallery"
+                    ref={lightboxRef}
                   >
                     <button
                       className="absolute right-6 top-6 rounded-full border border-white/20 p-3 text-white"
@@ -527,8 +543,9 @@ export default function ProductDetailPage({
                             (lightboxIndex - 1 + galleryImages.length) % galleryImages.length
                           );
                         }}
+                        aria-label="Previous gallery image"
                       >
-                        <ChevronLeft />
+                        <ChevronLeft aria-hidden="true" />
                       </button>
                       <button
                         className="rounded-full border border-white/20 p-3 text-white"
@@ -536,8 +553,9 @@ export default function ProductDetailPage({
                           e.stopPropagation();
                           setLightboxIndex((lightboxIndex + 1) % galleryImages.length);
                         }}
+                        aria-label="Next gallery image"
                       >
-                        <ChevronRight />
+                        <ChevronRight aria-hidden="true" />
                       </button>
                     </div>
                   </motion.div>
@@ -689,7 +707,7 @@ function WhyLoveSection({ product, theme }: { product: Product; theme: ProductTh
 
   return (
     <section ref={ref} className="w-full py-0 flex flex-col items-center">
-      <div className="w-full rounded-[3rem] border border-white/10 p-12 md:p-20 backdrop-blur-xl bg-white/5 relative overflow-hidden shadow-2xl">
+      <div className="w-full rounded-[3rem] border border-white/10 p-6 md:p-12 lg:p-20 backdrop-blur-xl bg-white/5 relative overflow-hidden shadow-2xl">
         <div className="absolute inset-0 bg-gradient-to-br from-white/5 to-transparent z-0 pointer-events-none" />
         
         <div className="mb-16 text-center relative z-10">
@@ -932,7 +950,7 @@ function BottomCTA({ theme }: { theme: ProductTheme }) {
         initial={{ opacity: 0, y: 40 }}
         animate={isInView ? { opacity: 1, y: 0 } : {}}
         transition={{ duration: 0.8 }}
-        className="w-full max-w-[900px] rounded-[3rem] border border-white/10 p-12 text-center backdrop-blur-xl md:p-16 bg-white/5 shadow-2xl relative overflow-hidden"
+        className="w-full max-w-[900px] rounded-[3rem] border border-white/10 p-6 text-center backdrop-blur-xl md:p-16 bg-white/5 shadow-2xl relative overflow-hidden"
       >
         <div className="absolute inset-0 bg-gradient-to-br from-white/5 to-transparent z-0 pointer-events-none" />
         

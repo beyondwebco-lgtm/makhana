@@ -63,7 +63,7 @@ export default function BrandStory() {
           {/* Stats */}
           <div
             ref={statsRef}
-            style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: "16px", marginBottom: "64px" }}
+            className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-16"
           >
             {stats.map((stat) => (
               <div
@@ -92,7 +92,7 @@ export default function BrandStory() {
           transition={{ duration: 1, delay: 0.4 }}
           style={{ maxWidth: "1000px", margin: "0 auto", padding: "0 24px" }}
         >
-          <div style={{ position: "relative", borderRadius: "32px", overflow: "hidden", boxShadow: "0 32px 80px rgba(0,0,0,0.5)", aspectRatio: "21/9" }}>
+          <div className="relative rounded-[32px] overflow-hidden shadow-2xl aspect-[16/9] md:aspect-[21/9]">
             <Image
               src="/products/Bowl.jpeg"
               alt="Vellari — All Flavours. One Bowl."

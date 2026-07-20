@@ -56,7 +56,7 @@ export default function ProductCollection() {
                 </div>
               )}
 
-              <button className="absolute top-4 right-4 z-20 w-9 h-9 rounded-full bg-white/90 backdrop-blur-sm flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all duration-300 translate-y-2 group-hover:translate-y-0 shadow-sm hover:bg-white">
+              <button className="absolute top-4 right-4 z-20 w-11 h-11 rounded-full bg-white/90 backdrop-blur-sm flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all duration-300 translate-y-2 group-hover:translate-y-0 shadow-sm hover:bg-white">
                 <Eye className="w-4 h-4 text-v-black/70" />
               </button>
 

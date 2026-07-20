@@ -9,7 +9,7 @@ export default function FinalCTA() {
 
   return (
     <section
-      id="products"
+      id="final-cta"
       ref={ref}
       style={{
         width: "100%",

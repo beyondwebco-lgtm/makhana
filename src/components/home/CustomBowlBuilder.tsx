@@ -54,7 +54,7 @@ const PREMIUM_COMBOS = [
 
 export default function CustomBowlBuilder() {
   return (
-    <section className="relative w-full min-h-screen py-32 overflow-hidden flex flex-col items-center justify-center bg-[#050505]">
+    <section id="bowl-mixer-section" className="relative w-full min-h-screen py-32 overflow-hidden flex flex-col items-center justify-center bg-[#050505]">
       
       {/* Gradient Blobs */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none -z-10">
@@ -192,7 +192,7 @@ export default function CustomBowlBuilder() {
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
           transition={{ duration: 0.8 }}
-          className="w-full max-w-4xl rounded-[3rem] bg-gradient-to-b from-[#111] to-[#080808] border border-white/5 p-12 md:p-16 text-center relative overflow-hidden flex flex-col items-center"
+          className="w-full max-w-4xl rounded-[3rem] bg-gradient-to-b from-[#111] to-[#080808] border border-white/5 p-6 md:p-12 lg:p-16 text-center relative overflow-hidden flex flex-col items-center"
         >
           {/* Internal Glow */}
           <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full h-full bg-[url('/assets/noise.png')] opacity-10 mix-blend-overlay pointer-events-none" />

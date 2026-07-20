@@ -71,7 +71,7 @@ export default function ScrollAnimation() {
   // Preload all frames for desktop
   useEffect(() => {
     if (isMobile) {
-      setLoaded(true);
+      requestAnimationFrame(() => setLoaded(true));
       return;
     }
 
@@ -202,7 +202,7 @@ export default function ScrollAnimation() {
   }, [isMobile, loaded]);
 
   return (
-    <div
+    <section
       id="scroll-animation"
       ref={sectionRef}
       className="relative bg-v-cream"
@@ -248,6 +248,6 @@ export default function ScrollAnimation() {
       </div>
 
       <div className="absolute bottom-0 left-0 right-0 h-40 bg-gradient-to-t from-v-cream to-transparent z-10 pointer-events-none" />
-    </div>
+    </section>
   );
 }

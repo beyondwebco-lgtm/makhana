@@ -85,7 +85,7 @@ export default function LoadingScreen() {
 
             {/* LOADING Text */}
             <motion.h1
-              className="text-5xl md:text-6xl font-[family-name:var(--font-body)] font-black tracking-wider text-[#641A1A] uppercase"
+              className="text-4xl md:text-6xl font-[family-name:var(--font-body)] font-black tracking-wider text-[#641A1A] uppercase"
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.2, duration: 0.5 }}

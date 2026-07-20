@@ -139,7 +139,7 @@ export default function FlavourShowcase() {
                 zIndex,
               }}
               transition={{ type: "spring", stiffness: 250, damping: 30 }}
-              onClick={(e) => !isActive && goTo(products.findIndex((p) => p.id === product.id), e as any)}
+              onClick={(e) => !isActive && goTo(products.findIndex((p) => p.id === product.id), e as unknown as React.MouseEvent)}
               style={{
                 position: "absolute",
                 cursor: isActive ? "default" : "pointer",

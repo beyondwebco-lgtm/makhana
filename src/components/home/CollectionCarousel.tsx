@@ -31,7 +31,7 @@ const textContainerVariants: Variants = {
 const textItemVariants: Variants = {
   hidden: { opacity: 0, y: 24 },
   show: { opacity: 1, y: 0, transition: { duration: 0.7, ease: cinematicEase } },
-  exit: { opacity: 0, y: -16, transition: { duration: 0.4, ease: "easeOut" as any } },
+  exit: { opacity: 0, y: -16, transition: { duration: 0.4, ease: "easeOut" as const } },
 };
 
 // Subtle idle float for the active product image
