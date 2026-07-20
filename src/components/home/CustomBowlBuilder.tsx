@@ -54,14 +54,7 @@ const PREMIUM_COMBOS = [
 
 export default function CustomBowlBuilder() {
   return (
-    <section className="relative w-full min-h-screen py-32 overflow-hidden flex flex-col items-center justify-center">
-      
-      {/* 
-        ========================================
-        LUXURY BACKGROUND 
-        ========================================
-      */}
-      <div className="absolute inset-0 bg-[#050505] -z-20" />
+    <section className="relative w-full min-h-screen py-32 overflow-hidden flex flex-col items-center justify-center bg-[#050505]">
       
       {/* Gradient Blobs */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none -z-10">
