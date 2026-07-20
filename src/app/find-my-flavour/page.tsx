@@ -827,24 +827,28 @@ export default function FindMyFlavour() {
                         key="result"
                         initial={{ opacity: 0, scale: 0.98 }}
                         animate={{ opacity: 1, scale: 1 }}
-                        className="w-full h-full grid grid-cols-1 lg:grid-cols-12 gap-12 items-center"
+                        className="w-full h-full grid grid-cols-1 lg:grid-cols-12 gap-16 items-center"
                       >
                         {/* LEFT COLUMN: PRODUCT ARTWORK & SHIFTING GLOW */}
-                        <div className="lg:col-span-6 flex flex-col items-center relative">
-                          <div className="relative w-80 h-80 md:w-96 md:h-96 flex items-center justify-center group mb-6 z-10">
-                            <div className="absolute h-72 w-72 rounded-full blur-[80px] opacity-40 -z-10 animate-pulse" style={{ background: recommendedProduct.color }} />
+                        <div className="lg:col-span-5 flex flex-col items-center relative">
+                          <motion.div
+                            animate={{ y: [0, -12, 0] }}
+                            transition={{ repeat: Infinity, duration: 4, ease: "easeInOut" }}
+                            className="relative w-80 h-80 md:w-[420px] md:h-[420px] flex items-center justify-center group mb-6 z-10"
+                          >
+                            <div className="absolute h-80 w-80 rounded-full blur-[100px] opacity-45 -z-10 animate-pulse" style={{ background: recommendedProduct.color }} />
                             <Image
                               src={recommendedProduct.image}
                               alt={recommendedProduct.name}
-                              width={320}
-                              height={320}
+                              width={380}
+                              height={380}
                               priority
                               className="object-contain transform hover:scale-105 transition-transform duration-500 ease-out z-10"
                             />
-                          </div>
+                          </motion.div>
 
                           {capturedImage && (
-                            <div className="absolute bottom-[-10px] left-1/2 -translate-x-1/2 bg-black/85 border border-white/10 rounded-full py-2.5 px-6 flex items-center gap-3 shadow-xl z-20">
+                            <div className="absolute bottom-[-15px] left-1/2 -translate-x-1/2 bg-black/85 border border-white/10 rounded-full py-2.5 px-6 flex items-center gap-3 shadow-xl z-20">
                               <img
                                 src={capturedImage}
                                 alt="Selfie thumbnail"
@@ -858,57 +862,78 @@ export default function FindMyFlavour() {
                           )}
                         </div>
 
-                        {/* RIGHT COLUMN: COMPACTION FIX FOR BUTTON LAYOUTS */}
-                        <div className="lg:col-span-6 flex flex-col justify-center text-left">
-                          <span className="text-v-gold text-[11px] font-accent font-black uppercase tracking-[4px] mb-4">
+                        {/* RIGHT COLUMN: DETAIL REPORT & COMPATIBILITY METERS */}
+                        <div className="lg:col-span-7 flex flex-col justify-center text-left">
+                          <span className="text-v-gold text-sm font-bold uppercase tracking-[5px] mb-6 block font-accent">
                             Your Perfect Match
                           </span>
-                          <h2 className="text-5xl lg:text-6xl font-black uppercase tracking-[6px] mb-6 font-accent leading-tight text-white">
+                          <h2 className="text-7xl sm:text-8xl font-black uppercase tracking-[4px] leading-[1.1] text-white mb-10 font-accent">
                             {recommendedProduct.name}
                           </h2>
 
-                          <p className="text-white/70 text-base leading-relaxed mb-8 font-light tracking-[1px]">
+                          <p className="text-white/70 text-lg sm:text-xl leading-[1.9] tracking-[0.4px] mb-10 max-w-[650px] font-light">
                             You seem calm, refreshing, and balanced today. Based on your mood and flavor profiles, we think <strong className="text-white font-bold">{recommendedProduct.name}</strong> is the perfect fit to elevate your crunch game.
                           </p>
 
-                          {/* Match metrics with premium meters */}
-                          <div className="bg-white/5 border border-white/5 rounded-2xl p-6 space-y-6 mb-8">
-                            <div className="flex justify-between items-center text-xs">
-                              <span className="text-white/50 uppercase tracking-widest text-[10px] tracking-[2px]">Vellari Core Fit</span>
-                              <span className="font-accent font-black text-v-gold text-sm tracking-[2px]">95% MATCH</span>
-                            </div>
-
-                            {/* Taste Meter */}
-                            <div className="space-y-2 border-t border-white/5 pt-4">
-                              <div className="flex justify-between text-[10px] text-white/40 uppercase tracking-wider tracking-[1px]">
-                                <span>Taste Intensity (Crunchiness)</span>
-                                <span className="text-white">90%</span>
+                          {/* Match metrics with premium meters inside separate glass cards */}
+                          <div className="space-y-4 mb-12">
+                            {/* Card 1: Overall Match */}
+                            <div className="bg-white/5 border border-white/10 rounded-2xl p-6 shadow-[0_4px_30px_rgba(0,0,0,0.2)] backdrop-blur-sm space-y-3">
+                              <div className="flex justify-between items-center text-xs">
+                                <span className="text-white/50 uppercase tracking-widest text-[10px] tracking-[2px]">Vellari Match</span>
+                                <span className="font-accent font-black text-v-gold text-sm tracking-[2px]">95% MATCH</span>
                               </div>
                               <div className="w-full h-1.5 bg-white/5 rounded-full overflow-hidden">
-                                <div className="h-full bg-v-gold" style={{ width: "90%" }} />
+                                <motion.div
+                                  initial={{ width: 0 }}
+                                  animate={{ width: "95%" }}
+                                  transition={{ duration: 1, ease: "easeOut" }}
+                                  className="h-full bg-v-gold"
+                                />
                               </div>
                             </div>
 
-                            {/* Mood Meter */}
-                            <div className="space-y-2">
-                              <div className="flex justify-between text-[10px] text-white/40 uppercase tracking-wider tracking-[1px]">
-                                <span>Mood Temperament (Aroma Match)</span>
-                                <span className="text-white">95%</span>
+                            {/* Card 2: Crunch Preference */}
+                            <div className="bg-white/5 border border-white/10 rounded-2xl p-6 shadow-[0_4px_30px_rgba(0,0,0,0.2)] backdrop-blur-sm space-y-3">
+                              <div className="flex justify-between items-center text-xs">
+                                <span className="text-white/50 uppercase tracking-widest text-[10px] tracking-[2px]">Crunch Preference</span>
+                                <span className="font-accent font-black text-v-gold text-sm tracking-[2px]">90% MATCH</span>
                               </div>
                               <div className="w-full h-1.5 bg-white/5 rounded-full overflow-hidden">
-                                <div className="h-full bg-v-gold" style={{ width: "95%" }} />
+                                <motion.div
+                                  initial={{ width: 0 }}
+                                  animate={{ width: "90%" }}
+                                  transition={{ duration: 1, ease: "easeOut", delay: 0.15 }}
+                                  className="h-full bg-v-gold"
+                                />
+                              </div>
+                            </div>
+
+                            {/* Card 3: Mood Match */}
+                            <div className="bg-white/5 border border-white/10 rounded-2xl p-6 shadow-[0_4px_30px_rgba(0,0,0,0.2)] backdrop-blur-sm space-y-3">
+                              <div className="flex justify-between items-center text-xs">
+                                <span className="text-white/50 uppercase tracking-widest text-[10px] tracking-[2px]">Mood Match</span>
+                                <span className="font-accent font-black text-v-gold text-sm tracking-[2px]">95% MATCH</span>
+                              </div>
+                              <div className="w-full h-1.5 bg-white/5 rounded-full overflow-hidden">
+                                <motion.div
+                                  initial={{ width: 0 }}
+                                  animate={{ width: "95%" }}
+                                  transition={{ duration: 1, ease: "easeOut", delay: 0.3 }}
+                                  className="h-full bg-v-gold"
+                                />
                               </div>
                             </div>
                           </div>
 
-                          {/* Fix overlapping buttons - clean horizontal layout with gap */}
-                          <div className="flex flex-col sm:flex-row gap-4 w-full mt-4 justify-start">
+                          {/* Action controls with wider padding and gaps */}
+                          <div className="flex flex-col sm:flex-row gap-6 w-full justify-start">
                             <Link href={`/flavours/${recommendedProduct.slug}`} className="w-full sm:w-auto">
                               <motion.span
                                 whileHover={{ scale: 1.02 }}
                                 whileTap={{ scale: 0.98 }}
                                 onClick={() => setIsModalOpen(false)}
-                                className="w-full sm:w-auto inline-flex cursor-pointer items-center justify-center gap-2 rounded-full bg-v-gold text-black px-8 py-4.5 font-[family-name:var(--font-accent)] text-xs font-black uppercase tracking-widest shadow-lg shadow-v-gold/15"
+                                className="w-full sm:w-auto inline-flex cursor-pointer items-center justify-center gap-2 rounded-full bg-v-gold text-black px-12 py-5 font-[family-name:var(--font-accent)] text-sm font-black uppercase tracking-widest shadow-lg shadow-v-gold/15"
                               >
                                 Explore This Flavour
                                 <ArrowRight size={14} />
@@ -925,7 +950,7 @@ export default function FindMyFlavour() {
                                 setStep("camera");
                                 setTimeout(() => startCamera(), 100);
                               }}
-                              className="w-full sm:w-auto inline-flex cursor-pointer items-center justify-center gap-2 rounded-full bg-white/5 border border-white/10 px-8 py-4.5 font-[family-name:var(--font-accent)] text-xs font-bold uppercase tracking-widest text-white hover:bg-white/10 transition"
+                              className="w-full sm:w-auto inline-flex cursor-pointer items-center justify-center gap-2 rounded-full bg-white/5 border border-white/10 px-12 py-5 font-[family-name:var(--font-accent)] text-sm font-bold uppercase tracking-widest text-white hover:bg-white/10 transition"
                             >
                               Try Again
                             </motion.button>
