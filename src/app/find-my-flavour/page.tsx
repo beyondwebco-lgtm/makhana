@@ -363,8 +363,8 @@ export default function FindMyFlavour() {
           {/* Animated Branding Light Blobs */}
           <motion.div
             animate={{
-              x: [mousePos.x * 0.4, mousePos.x * -0.4, mousePos.x * 0.4],
-              y: [mousePos.y * 0.4, mousePos.y * -0.4, mousePos.y * 0.4],
+              x: mousePos.x * 0.4,
+              y: mousePos.y * 0.4,
               scale: isTransitioning ? 1.5 : 1,
             }}
             transition={{ type: "spring", stiffness: 40, damping: 20 }}
@@ -372,8 +372,8 @@ export default function FindMyFlavour() {
           />
           <motion.div
             animate={{
-              x: [mousePos.x * -0.6, mousePos.x * 0.6, mousePos.x * -0.6],
-              y: [mousePos.y * -0.6, mousePos.y * 0.6, mousePos.y * -0.6],
+              x: mousePos.x * -0.6,
+              y: mousePos.y * -0.6,
             }}
             transition={{ type: "spring", stiffness: 45, damping: 25 }}
             className="absolute bottom-1/4 right-1/4 w-[50vw] h-[50vw] rounded-full bg-gradient-to-r from-green-500/5 to-emerald-600/5 blur-[150px] animate-pulse"
