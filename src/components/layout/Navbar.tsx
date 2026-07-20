@@ -12,7 +12,7 @@ import { usePathname, useRouter } from "next/navigation";
 const navLinks = [
   { label: "Home", href: "/" },
   { label: "Shop", href: "#products" },
-  { label: "Find My Flavor", href: "#products" },
+  { label: "Find My Flavor", href: "/find-my-flavour" },
   { label: "About Us", href: "#story" },
   { label: "Why Vellari", href: "#story" },
   { label: "Offers / Reviews", href: "#testimonials" },
