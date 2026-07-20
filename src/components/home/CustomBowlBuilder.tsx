@@ -205,7 +205,7 @@ export default function CustomBowlBuilder() {
             Take full control of your snacking experience. Mix and match your favourite flavours to create your ultimate custom bowl.
           </p>
           
-          <Link href="/custom-bowl" className="relative z-10">
+          <Link href="/create-your-bowl" className="relative z-10">
             <motion.div
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.98 }}

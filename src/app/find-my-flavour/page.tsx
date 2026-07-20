@@ -5,7 +5,7 @@ import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
 import Link from "next/link";
 import { motion, AnimatePresence } from "framer-motion";
-import { Camera, Upload, SkipForward, ArrowRight, RefreshCw, Sparkles, Check, X } from "lucide-react";
+import { Camera, Upload, SkipForward, ArrowRight, RefreshCw, Sparkles, Check, X, Star, Activity, Leaf, Heart, Lock } from "lucide-react";
 import Image from "next/image";
 import { products } from "@/data/products";
 import LightRays from "@/components/ui/LightRays";
@@ -139,11 +139,11 @@ const QUESTIONS: Question[] = [
 
 const FLAVOUR_SCORES: Record<string, Record<string, number>> = {
   "love-bite": { cheesy: 4, comfort: 3, relaxed: 2, happy: 2, yellow: 3, movies: 2 },
-  "blush": { tangy: 4, adventure: 3, excited: 2, orange: 3, friends: 2 },
+  "blush": { tangy: 4, adventure: 3, excited: 2, orange: 3, friends: 2, travelling: 3 },
   "green-flag": { refreshing: 4, calm: 3, green: 4, healthy: 3, gym: 2 },
-  "red-flag": { energetic: 4, spicy: 4, red: 4, excited: 2, confident: 3 },
-  "crush-me": { classic: 4, tired: 3, cream: 4, study: 2, working: 2 },
-  "soulmate": { social: 4, different: 3, purple: 4, happy: 2, office: 2 },
+  "red-flag": { energetic: 4, spicy: 4, red: 4, excited: 2, confident: 3, adventure: 2 },
+  "crush-me": { classic: 4, tired: 3, cream: 4, study: 2, working: 2, comfort: 2 },
+  "soulmate": { classic: 2, different: 4, purple: 4, happy: 3, office: 3, friends: 2, confident: 2 },
 };
 
 const THEME_COLORS: Record<string, string> = {
@@ -154,6 +154,15 @@ const THEME_COLORS: Record<string, string> = {
   "red-flag": "#D94A38",     // Deep Red
   "crush-me": "#D4AF37",     // Warm Champagne Gold
   "soulmate": "#9b5de5",     // Deep Purple
+};
+
+const FLAVOUR_STYLING: Record<string, { ingredients: string[], lighting: string, bowlFilter: string }> = {
+  "love-bite": { ingredients: ["🧀", "✨", "🍿"], lighting: "from-yellow-500/20 to-orange-500/5", bowlFilter: "sepia(0.3) brightness(1.1) contrast(1.1)" },
+  "green-flag": { ingredients: ["🌿", "🍃", "🍋"], lighting: "from-green-500/20 to-emerald-500/5", bowlFilter: "brightness(1.1) contrast(1.05)" },
+  "red-flag": { ingredients: ["🌶️", "🔥", "🍅"], lighting: "from-red-600/20 to-orange-600/5", bowlFilter: "saturate(1.2) contrast(1.15)" },
+  "blush": { ingredients: ["🍅", "🌿", "🧂"], lighting: "from-orange-500/20 to-red-500/5", bowlFilter: "saturate(1.1) contrast(1.1)" },
+  "crush-me": { ingredients: ["🧂", "⚪", "🥣"], lighting: "from-amber-200/20 to-yellow-100/5", bowlFilter: "brightness(1.05)" },
+  "soulmate": { ingredients: ["✨", "🔮", "🌶️"], lighting: "from-purple-500/20 to-pink-500/5", bowlFilter: "contrast(1.1) hue-rotate(-10deg)" },
 };
 
 export default function FindMyFlavour() {
@@ -309,16 +318,22 @@ export default function FindMyFlavour() {
       });
     });
 
-    let bestSlug = "green-flag";
+    let bestSlugs: string[] = [];
     let highestScore = -1;
+
     Object.keys(scores).forEach((slug) => {
       if (scores[slug] > highestScore) {
         highestScore = scores[slug];
-        bestSlug = slug;
+        bestSlugs = [slug];
+      } else if (scores[slug] === highestScore) {
+        bestSlugs.push(slug);
       }
     });
 
-    setRecommendedSlug(bestSlug);
+    // Randomly pick one if there's a tie
+    const finalBest = bestSlugs[Math.floor(Math.random() * bestSlugs.length)];
+
+    setRecommendedSlug(finalBest || "green-flag");
   };
 
   useEffect(() => {
@@ -821,127 +836,222 @@ export default function FindMyFlavour() {
                       </motion.div>
                     )}
 
-                    {/* RESULTS STEP: STYLISH FULL SCREEN METERS */}
+                    {/* RESULTS STEP: REFERENCE IMAGE LAYOUT */}
                     {step === "result" && (
                       <motion.div
                         key="result"
                         initial={{ opacity: 0, scale: 0.98 }}
                         animate={{ opacity: 1, scale: 1 }}
-                        className="w-full h-full grid grid-cols-1 lg:grid-cols-12 gap-16 items-center"
+                        className="w-full h-full grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-24 items-center justify-center p-4 sm:p-12 max-w-[1400px] mx-auto"
                       >
-                        {/* LEFT COLUMN: PRODUCT ARTWORK & SHIFTING GLOW */}
-                        <div className="lg:col-span-5 flex flex-col items-center relative">
+                        {/* LEFT COLUMN: PREMIUM FOOD PHOTOGRAPHY COMPOSITION */}
+                        <div className="flex flex-col items-center justify-center relative w-full h-full min-h-[500px]">
+                          <div className={`absolute inset-0 bg-gradient-to-tr ${FLAVOUR_STYLING[recommendedSlug]?.lighting || "from-v-gold/20 to-black"} rounded-full blur-[120px] opacity-40 -z-20`} />
+                          
                           <motion.div
-                            animate={{ y: [0, -12, 0] }}
-                            transition={{ repeat: Infinity, duration: 4, ease: "easeInOut" }}
-                            className="relative w-80 h-80 md:w-[420px] md:h-[420px] flex items-center justify-center group mb-6 z-10"
+                            animate={{ y: [0, -10, 0] }}
+                            transition={{ repeat: Infinity, duration: 6, ease: "easeInOut" }}
+                            className="relative w-full aspect-square max-w-[550px] flex items-center justify-center z-10"
                           >
-                            <div className="absolute h-80 w-80 rounded-full blur-[100px] opacity-45 -z-10 animate-pulse" style={{ background: recommendedProduct.color }} />
-                            <Image
-                              src={recommendedProduct.image}
-                              alt={recommendedProduct.name}
-                              width={380}
-                              height={380}
-                              priority
-                              className="object-contain transform hover:scale-105 transition-transform duration-500 ease-out z-10"
-                            />
-                          </motion.div>
+                            {/* Flavour specific floating ingredients */}
+                            {(FLAVOUR_STYLING[recommendedSlug]?.ingredients || ["✨", "🌿", "🧂"]).map((icon, idx) => (
+                              <motion.div
+                                key={idx}
+                                animate={{ 
+                                  y: [0, -15, 0], 
+                                  x: [0, idx % 2 === 0 ? 10 : -10, 0],
+                                  rotate: [0, 10, -5, 0] 
+                                }}
+                                transition={{ repeat: Infinity, duration: 4 + idx * 1.5, ease: "easeInOut", delay: idx * 0.5 }}
+                                className="absolute text-4xl lg:text-5xl opacity-80 drop-shadow-2xl z-30"
+                                style={{
+                                  top: idx === 0 ? '10%' : idx === 1 ? '70%' : '20%',
+                                  left: idx === 0 ? '15%' : idx === 1 ? '20%' : '80%',
+                                  filter: 'blur(1px)',
+                                }}
+                              >
+                                {icon}
+                              </motion.div>
+                            ))}
 
-                          {capturedImage && (
-                            <div className="absolute bottom-[-15px] left-1/2 -translate-x-1/2 bg-black/85 border border-white/10 rounded-full py-2.5 px-6 flex items-center gap-3 shadow-xl z-20">
-                              <img
-                                src={capturedImage}
-                                alt="Selfie thumbnail"
-                                className="w-10 h-10 rounded-full object-cover border border-v-gold"
+                            {/* The Bowl Photo (Background) */}
+                            <motion.div
+                              animate={{ y: [0, 8, 0], rotate: [-2, 0, -2] }}
+                              transition={{ repeat: Infinity, duration: 8, ease: "easeInOut" }}
+                              className="absolute top-[5%] left-[5%] w-[75%] h-[75%] z-10"
+                            >
+                              <Image
+                                src={`/assets/bowl/${recommendedSlug}.png`}
+                                alt={`${recommendedProduct.name} Bowl`}
+                                fill
+                                priority
+                                className="object-contain drop-shadow-[0_30px_30px_rgba(0,0,0,0.8)]"
+                                style={{ filter: FLAVOUR_STYLING[recommendedSlug]?.bowlFilter || 'none' }}
                               />
-                              <div className="text-left">
-                                <h4 className="text-[11px] font-accent font-black uppercase text-v-gold">Match Verified</h4>
-                                <p className="text-[9px] text-white/50">Personalised recommendation</p>
-                              </div>
-                            </div>
-                          )}
+                            </motion.div>
+
+                            {/* The Product Jar Photo (Foreground) */}
+                            <motion.div
+                              animate={{ y: [0, -5, 0], rotate: [0, 2, 0] }}
+                              transition={{ repeat: Infinity, duration: 7, ease: "easeInOut", delay: 0.5 }}
+                              className="absolute bottom-[5%] right-[5%] w-[65%] h-[65%] z-20"
+                            >
+                              <Image
+                                src={recommendedProduct.image}
+                                alt={recommendedProduct.name}
+                                fill
+                                priority
+                                className="object-contain drop-shadow-[0_40px_40px_rgba(0,0,0,0.9)] transform hover:scale-105 transition-transform duration-700"
+                              />
+                            </motion.div>
+                            
+                            {/* Verified Selfie Badge */}
+                            {capturedImage && (
+                              <motion.div 
+                                initial={{ opacity: 0, y: 20 }}
+                                animate={{ opacity: 1, y: 0 }}
+                                transition={{ delay: 1 }}
+                                className="absolute -bottom-8 left-1/2 -translate-x-1/2 bg-black/60 backdrop-blur-xl border border-white/10 rounded-full py-2.5 px-6 flex items-center gap-3 shadow-[0_10px_30px_rgba(0,0,0,0.5)] z-40"
+                              >
+                                <img
+                                  src={capturedImage}
+                                  alt="Selfie thumbnail"
+                                  className="w-10 h-10 rounded-full object-cover border border-v-gold/50"
+                                />
+                                <div className="text-left">
+                                  <h4 className="text-[11px] font-accent font-black uppercase text-v-gold tracking-widest">Match Verified</h4>
+                                </div>
+                              </motion.div>
+                            )}
+                          </motion.div>
                         </div>
 
                         {/* RIGHT COLUMN: DETAIL REPORT & COMPATIBILITY METERS */}
-                        <div className="lg:col-span-7 flex flex-col justify-center text-left">
-                          <span className="text-v-gold text-sm font-bold uppercase tracking-[5px] mb-6 block font-accent">
-                            Your Perfect Match
-                          </span>
-                          <h2 className="text-7xl sm:text-8xl font-black uppercase tracking-[4px] leading-[1.1] text-white mb-10 font-accent">
+                        <div className="flex flex-col justify-center text-left w-full max-w-[650px] mx-auto lg:mx-0 z-20">
+                          
+                          <div className="flex items-center gap-2 mb-4">
+                            <Sparkles size={14} className="text-v-gold" />
+                            <span className="text-v-gold text-xs sm:text-sm font-bold uppercase tracking-[6px] block font-accent">
+                              Your Perfect Match
+                            </span>
+                          </div>
+
+                          <h2 className="text-6xl sm:text-7xl lg:text-8xl font-black uppercase tracking-[8px] leading-none text-white mb-6 font-accent drop-shadow-lg">
                             {recommendedProduct.name}
                           </h2>
 
-                          <p className="text-white/70 text-lg sm:text-xl leading-[1.9] tracking-[0.4px] mb-10 max-w-[650px] font-light">
-                            You seem calm, refreshing, and balanced today. Based on your mood and flavor profiles, we think <strong className="text-white font-bold">{recommendedProduct.name}</strong> is the perfect fit to elevate your crunch game.
+                          <p className="text-white/60 text-base sm:text-lg leading-[2] tracking-[1px] mb-8 font-light">
+                            You seem calm, refreshing, and balanced today.<br className="hidden sm:block"/>
+                            Based on your mood and flavor profiles, we think<br className="hidden sm:block"/>
+                            <strong className="text-white font-medium">{recommendedProduct.name}</strong> is the perfect fit to elevate your crunch game.
                           </p>
 
-                          {/* Match metrics with premium meters inside separate glass cards */}
-                          <div className="space-y-4 mb-12">
-                            {/* Card 1: Overall Match */}
-                            <div className="bg-white/5 border border-white/10 rounded-2xl p-6 shadow-[0_4px_30px_rgba(0,0,0,0.2)] backdrop-blur-sm space-y-3">
-                              <div className="flex justify-between items-center text-xs">
-                                <span className="text-white/50 uppercase tracking-widest text-[10px] tracking-[2px]">Vellari Match</span>
-                                <span className="font-accent font-black text-v-gold text-sm tracking-[2px]">95% MATCH</span>
-                              </div>
-                              <div className="w-full h-1.5 bg-white/5 rounded-full overflow-hidden">
-                                <motion.div
-                                  initial={{ width: 0 }}
-                                  animate={{ width: "95%" }}
-                                  transition={{ duration: 1, ease: "easeOut" }}
-                                  className="h-full bg-v-gold"
-                                />
-                              </div>
-                            </div>
-
-                            {/* Card 2: Crunch Preference */}
-                            <div className="bg-white/5 border border-white/10 rounded-2xl p-6 shadow-[0_4px_30px_rgba(0,0,0,0.2)] backdrop-blur-sm space-y-3">
-                              <div className="flex justify-between items-center text-xs">
-                                <span className="text-white/50 uppercase tracking-widest text-[10px] tracking-[2px]">Crunch Preference</span>
-                                <span className="font-accent font-black text-v-gold text-sm tracking-[2px]">90% MATCH</span>
-                              </div>
-                              <div className="w-full h-1.5 bg-white/5 rounded-full overflow-hidden">
-                                <motion.div
-                                  initial={{ width: 0 }}
-                                  animate={{ width: "90%" }}
-                                  transition={{ duration: 1, ease: "easeOut", delay: 0.15 }}
-                                  className="h-full bg-v-gold"
-                                />
-                              </div>
-                            </div>
-
-                            {/* Card 3: Mood Match */}
-                            <div className="bg-white/5 border border-white/10 rounded-2xl p-6 shadow-[0_4px_30px_rgba(0,0,0,0.2)] backdrop-blur-sm space-y-3">
-                              <div className="flex justify-between items-center text-xs">
-                                <span className="text-white/50 uppercase tracking-widest text-[10px] tracking-[2px]">Mood Match</span>
-                                <span className="font-accent font-black text-v-gold text-sm tracking-[2px]">95% MATCH</span>
-                              </div>
-                              <div className="w-full h-1.5 bg-white/5 rounded-full overflow-hidden">
-                                <motion.div
-                                  initial={{ width: 0 }}
-                                  animate={{ width: "95%" }}
-                                  transition={{ duration: 1, ease: "easeOut", delay: 0.3 }}
-                                  className="h-full bg-v-gold"
-                                />
-                              </div>
-                            </div>
+                          {/* Separator with Heart */}
+                          <div className="flex items-center gap-4 w-full mb-10 opacity-30">
+                            <div className="h-[1px] flex-1 bg-gradient-to-r from-transparent to-v-gold"></div>
+                            <Heart size={14} className="text-v-gold fill-v-gold" />
+                            <div className="h-[1px] flex-1 bg-gradient-to-l from-transparent to-v-gold"></div>
                           </div>
 
-                          {/* Action controls with wider padding and gaps */}
-                          <div className="flex flex-col sm:flex-row gap-6 w-full justify-start">
+                          {/* Match metrics row-based layout */}
+                          <div className="space-y-8 mb-12">
+                            
+                            {/* Metric 1 */}
+                            <div className="w-full">
+                              <div className="flex items-center gap-6 mb-4">
+                                <div className="w-12 h-12 shrink-0 rounded-full bg-white/5 border border-white/5 flex items-center justify-center shadow-inner">
+                                  <Star size={20} className="text-v-gold/80" />
+                                </div>
+                                <div className="flex-1 flex justify-between items-center">
+                                  <div>
+                                    <h4 className="text-v-gold font-accent font-bold text-sm tracking-[4px] uppercase">Vellari Core Fit</h4>
+                                    <p className="text-white/40 text-[11px] tracking-[1px] mt-1">How well this flavour matches your vibe</p>
+                                  </div>
+                                  <span className="font-accent font-black text-v-gold text-base tracking-[3px]">95% MATCH</span>
+                                </div>
+                              </div>
+                              <div className="w-full pl-[72px]">
+                                <div className="w-full h-1.5 bg-white/10 rounded-full overflow-hidden">
+                                  <motion.div
+                                    initial={{ width: 0 }}
+                                    animate={{ width: "95%" }}
+                                    transition={{ duration: 1, ease: "easeOut" }}
+                                    className="h-full bg-v-gold rounded-full"
+                                  />
+                                </div>
+                              </div>
+                            </div>
+
+                            {/* Metric 2 */}
+                            <div className="w-full">
+                              <div className="flex items-center gap-6 mb-4">
+                                <div className="w-12 h-12 shrink-0 rounded-full bg-white/5 border border-white/5 flex items-center justify-center shadow-inner">
+                                  <Activity size={20} className="text-v-gold/80" />
+                                </div>
+                                <div className="flex-1 flex justify-between items-center">
+                                  <div>
+                                    <h4 className="text-v-gold font-accent font-bold text-sm tracking-[4px] uppercase">Taste Intensity</h4>
+                                    <p className="text-white/40 text-[11px] tracking-[1px] mt-1">Crunch level you'll absolutely enjoy</p>
+                                  </div>
+                                  <span className="font-accent font-black text-white text-base tracking-[3px]">90% MATCH</span>
+                                </div>
+                              </div>
+                              <div className="w-full pl-[72px]">
+                                <div className="w-full h-1.5 bg-white/10 rounded-full overflow-hidden">
+                                  <motion.div
+                                    initial={{ width: 0 }}
+                                    animate={{ width: "90%" }}
+                                    transition={{ duration: 1, ease: "easeOut", delay: 0.15 }}
+                                    className="h-full bg-v-gold rounded-full"
+                                  />
+                                </div>
+                              </div>
+                            </div>
+
+                            {/* Metric 3 */}
+                            <div className="w-full">
+                              <div className="flex items-center gap-6 mb-4">
+                                <div className="w-12 h-12 shrink-0 rounded-full bg-white/5 border border-white/5 flex items-center justify-center shadow-inner">
+                                  <Leaf size={20} className="text-v-gold/80" />
+                                </div>
+                                <div className="flex-1 flex justify-between items-center">
+                                  <div>
+                                    <h4 className="text-v-gold font-accent font-bold text-sm tracking-[4px] uppercase">Mood Temperament</h4>
+                                    <p className="text-white/40 text-[11px] tracking-[1px] mt-1">How this flavour complements your mood</p>
+                                  </div>
+                                  <span className="font-accent font-black text-white text-base tracking-[3px]">95% MATCH</span>
+                                </div>
+                              </div>
+                              <div className="w-full pl-[72px]">
+                                <div className="w-full h-1.5 bg-white/10 rounded-full overflow-hidden">
+                                  <motion.div
+                                    initial={{ width: 0 }}
+                                    animate={{ width: "95%" }}
+                                    transition={{ duration: 1, ease: "easeOut", delay: 0.3 }}
+                                    className="h-full bg-v-gold rounded-full"
+                                  />
+                                </div>
+                              </div>
+                            </div>
+
+                          </div>
+
+                          {/* Action controls */}
+                          <div className="flex flex-col sm:flex-row gap-5 w-full justify-start items-center">
                             <Link href={`/flavours/${recommendedProduct.slug}`} className="w-full sm:w-auto">
                               <motion.span
-                                whileHover={{ scale: 1.02 }}
+                                whileHover={{ scale: 1.02, filter: "brightness(1.1)" }}
                                 whileTap={{ scale: 0.98 }}
                                 onClick={() => setIsModalOpen(false)}
-                                className="w-full sm:w-auto inline-flex cursor-pointer items-center justify-center gap-2 rounded-full bg-v-gold text-black px-12 py-5 font-[family-name:var(--font-accent)] text-sm font-black uppercase tracking-widest shadow-lg shadow-v-gold/15"
+                                className="w-full sm:w-auto inline-flex cursor-pointer items-center justify-center gap-3 rounded-full bg-gradient-to-r from-[#D4AF37] to-[#e1c564] text-black px-10 py-4 font-[family-name:var(--font-accent)] text-sm font-black uppercase tracking-[2px] shadow-[0_0_30px_rgba(212,184,122,0.25)]"
                               >
                                 Explore This Flavour
-                                <ArrowRight size={14} />
+                                <ArrowRight size={16} />
                               </motion.span>
                             </Link>
 
                             <motion.button
-                              whileHover={{ scale: 1.02 }}
+                              whileHover={{ scale: 1.02, backgroundColor: "rgba(255,255,255,0.05)" }}
                               whileTap={{ scale: 0.98 }}
                               onClick={() => {
                                 setAnswers([]);
@@ -950,13 +1060,20 @@ export default function FindMyFlavour() {
                                 setStep("camera");
                                 setTimeout(() => startCamera(), 100);
                               }}
-                              className="w-full sm:w-auto inline-flex cursor-pointer items-center justify-center gap-2 rounded-full bg-white/5 border border-white/10 px-12 py-5 font-[family-name:var(--font-accent)] text-sm font-bold uppercase tracking-widest text-white hover:bg-white/10 transition"
+                              className="w-full sm:w-auto inline-flex cursor-pointer items-center justify-center gap-3 rounded-full bg-transparent border border-white/20 px-10 py-4 font-[family-name:var(--font-accent)] text-sm font-bold uppercase tracking-[2px] text-white transition"
                             >
                               Try Again
+                              <RefreshCw size={14} />
                             </motion.button>
                           </div>
-                        </div>
 
+                          {/* Privacy Footer */}
+                          <div className="flex justify-center sm:justify-start items-center gap-2 mt-8 text-white/30 text-[10px] tracking-[0.5px]">
+                            <Lock size={10} className="text-v-gold/60" />
+                            <span>Your results are private and used only for this recommendation.</span>
+                          </div>
+
+                        </div>
                       </motion.div>
                     )}
 
