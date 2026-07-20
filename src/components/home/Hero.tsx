@@ -5,6 +5,7 @@ import { motion } from "framer-motion";
 import Image from "next/image";
 import { ArrowRight, ChevronDown } from "lucide-react";
 import WarningMarquee from "./WarningMarquee";
+import SoftAurora from "../ui/SoftAurora";
 
 export default function Hero() {
   const parallaxRef = useRef<HTMLDivElement>(null);
@@ -53,10 +54,24 @@ export default function Hero() {
         background: "#070707",
       }}
     >
-      {/* Ambient glow */}
-      <div ref={parallaxRef} style={{ position: "absolute", inset: 0, transition: "transform 2000ms ease-out" }}>
-        <div style={{ position: "absolute", top: "20%", right: "20%", width: "600px", height: "600px", borderRadius: "50%", background: "rgba(212,150,26,0.05)", filter: "blur(160px)" }} />
-        <div style={{ position: "absolute", bottom: "20%", left: "10%", width: "400px", height: "400px", borderRadius: "50%", background: "rgba(123,79,191,0.04)", filter: "blur(120px)" }} />
+      {/* Ambient animated aurora background */}
+      <div style={{ position: "absolute", inset: 0, opacity: 0.7, pointerEvents: "none", zIndex: 1 }}>
+        <SoftAurora
+          speed={0.4}
+          scale={1.3}
+          brightness={0.9}
+          color1="#D4961A"
+          color2="#7B4FBF"
+          noiseFrequency={2.2}
+          noiseAmplitude={0.8}
+          bandHeight={0.5}
+          bandSpread={1.2}
+          octaveDecay={0.1}
+          layerOffset={0.2}
+          colorSpeed={0.6}
+          enableMouseInteraction={true}
+          mouseInfluence={0.3}
+        />
       </div>
 
       {/* Two-column layout */}

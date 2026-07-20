@@ -5,6 +5,9 @@ import { motion, AnimatePresence } from "framer-motion";
 import Link from "next/link";
 import { Search, ShoppingBag, Heart, User, Menu, X } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { useCart } from "@/context/CartContext";
+import CartDrawer from "./CartDrawer";
+import { usePathname, useRouter } from "next/navigation";
 
 const navLinks = [
   { label: "Home", href: "/" },
@@ -19,6 +22,20 @@ export default function Navbar() {
   const [scrolled, setScrolled] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
   const [pastHero, setPastHero] = useState(false);
+  const [isCartOpen, setIsCartOpen] = useState(false);
+  const [badgeBounce, setBadgeBounce] = useState(false);
+  const { cartCount } = useCart();
+  const pathname = usePathname();
+  const router = useRouter();
+
+  useEffect(() => {
+    const handleCartAdded = () => {
+      setBadgeBounce(true);
+      setTimeout(() => setBadgeBounce(false), 400);
+    };
+    window.addEventListener("cart-item-added", handleCartAdded);
+    return () => window.removeEventListener("cart-item-added", handleCartAdded);
+  }, []);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -44,8 +61,14 @@ export default function Navbar() {
   const handleNavClick = (href: string) => {
     setMobileOpen(false);
     if (href.startsWith("#")) {
-      const el = document.querySelector(href);
-      el?.scrollIntoView({ behavior: "smooth" });
+      if (pathname === "/") {
+        const el = document.querySelector(href);
+        el?.scrollIntoView({ behavior: "smooth" });
+      } else {
+        router.push("/" + href);
+      }
+    } else {
+      router.push(href);
     }
   };
 
@@ -154,7 +177,10 @@ export default function Navbar() {
             ))}
 
             {/* Cart */}
-            <button
+            <motion.button
+              onClick={() => setIsCartOpen(true)}
+              animate={badgeBounce ? { scale: [1, 1.3, 1] } : {}}
+              transition={{ duration: 0.3 }}
               className={cn(
                 "relative w-10 h-10 flex items-center justify-center rounded-full transition-all duration-300",
                 pastHero && scrolled
@@ -171,10 +197,19 @@ export default function Navbar() {
                     : "text-white/60 hover:text-v-cream"
                 )}
               />
-              <span className="absolute top-0 right-0 w-4 h-4 bg-v-gold text-v-black text-[9px] font-bold rounded-full flex items-center justify-center transform translate-x-1/4 -translate-y-1/4 shadow-sm">
-                0
-              </span>
-            </button>
+              <AnimatePresence>
+                {cartCount > 0 && (
+                  <motion.span
+                    initial={{ scale: 0 }}
+                    animate={{ scale: 1 }}
+                    exit={{ scale: 0 }}
+                    className="absolute top-0 right-0 w-4 h-4 bg-v-gold text-v-black text-[9px] font-bold rounded-full flex items-center justify-center transform translate-x-1/4 -translate-y-1/4 shadow-sm"
+                  >
+                    {cartCount}
+                  </motion.span>
+                )}
+              </AnimatePresence>
+            </motion.button>
 
             {/* Mobile Toggle */}
             <button
@@ -243,13 +278,19 @@ export default function Navbar() {
                   { icon: Search, label: "Search" },
                   { icon: User, label: "Account" },
                   { icon: Heart, label: "Wishlist" },
-                  { icon: ShoppingBag, label: "Cart" },
-                ].map(({ icon: Icon, label }) => (
+                  { icon: ShoppingBag, label: "Cart", onClick: () => { setIsCartOpen(true); setMobileOpen(false); } },
+                ].map(({ icon: Icon, label, onClick }) => (
                   <button
                     key={label}
-                    className="flex flex-col items-center gap-2 text-v-muted hover:text-v-gold transition-colors"
+                    onClick={onClick}
+                    className="flex flex-col items-center gap-2 text-v-muted hover:text-v-gold transition-colors relative"
                   >
                     <Icon className="w-6 h-6" />
+                    {label === "Cart" && cartCount > 0 && (
+                      <span className="absolute -top-1 right-2 w-4 h-4 bg-v-gold text-v-black text-[8px] font-bold rounded-full flex items-center justify-center shadow-sm">
+                        {cartCount}
+                      </span>
+                    )}
                     <span className="text-[9px] uppercase tracking-wider font-[family-name:var(--font-accent)]">
                       {label}
                     </span>
@@ -269,6 +310,8 @@ export default function Navbar() {
           </motion.div>
         )}
       </AnimatePresence>
+
+      <CartDrawer isOpen={isCartOpen} onClose={() => setIsCartOpen(false)} />
     </>
   );
 }

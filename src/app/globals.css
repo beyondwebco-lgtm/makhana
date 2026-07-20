@@ -331,6 +331,19 @@ section {
   opacity: 0.25;
 }
 
+/* ===== GRADIENT SHIFT KEYFRAMES ===== */
+@keyframes gradient {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+}
+
 /* ===== REDUCED MOTION ===== */
 @media (prefers-reduced-motion: reduce) {
   .animate-marquee,

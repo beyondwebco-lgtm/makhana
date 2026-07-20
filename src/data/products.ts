@@ -33,6 +33,7 @@ export interface Product {
   highlights: string[];
   allergenInfo: string;
   storageInstructions: string[];
+  bgImages: string[];
 }
 
 export const products: Product[] = [
@@ -70,6 +71,7 @@ export const products: Product[] = [
     highlights: ["Roasted, Not Fried", "High in Protein", "Gluten Free", "No Preservatives", "Rich in Fibre"],
     allergenInfo: "Processed in a facility that also processes nuts.",
     storageInstructions: ["Store in a cool, dry place", "Keep away from direct sunlight", "Once opened, keep the jar tightly closed"],
+    bgImages: ["01.png", "02.png", "03.png", "04.png", "05.png", "06.png", "07.png", "08.png", "09.png", "10.png", "11.png"],
   },
   {
     id: "2",
@@ -105,6 +107,7 @@ export const products: Product[] = [
     highlights: ["Roasted, Not Fried", "High in Protein", "Gluten Free", "No Preservatives", "Rich in Fibre"],
     allergenInfo: "Processed in a facility that also processes nuts.",
     storageInstructions: ["Store in a cool, dry place", "Keep away from direct sunlight", "Once opened, keep the jar tightly closed"],
+    bgImages: ["01.png", "02.png", "03.png", "04.png", "05.png", "06.png", "07.png", "08.png", "09.png", "10.png", "11.png"],
   },
   {
     id: "3",
@@ -138,6 +141,7 @@ export const products: Product[] = [
     highlights: ["Roasted, Not Fried", "High in Protein", "Gluten Free", "No Preservatives", "Rich in Fibre"],
     allergenInfo: "Processed in a facility that also processes nuts.",
     storageInstructions: ["Store in a cool, dry place", "Keep away from direct sunlight", "Once opened, keep the jar tightly closed"],
+    bgImages: ["01.png", "02.png", "03.png", "04.png", "05.png", "06.png", "07.png", "08.png", "09.png", "10.png", "11.png"],
   },
   {
     id: "4",
@@ -173,6 +177,7 @@ export const products: Product[] = [
     highlights: ["Roasted, Not Fried", "High in Protein", "Gluten Free", "No Preservatives", "Rich in Fibre"],
     allergenInfo: "Processed in a facility that also processes nuts.",
     storageInstructions: ["Store in a cool, dry place", "Keep away from direct sunlight", "Once opened, keep the jar tightly closed"],
+    bgImages: ["01.png", "02.png", "03.png", "04.png", "05.png", "06.png", "07.png", "08.png", "09.png", "10.png", "11.png"],
   },
   {
     id: "5",
@@ -206,6 +211,7 @@ export const products: Product[] = [
     highlights: ["Roasted, Not Fried", "High in Protein", "Gluten Free", "No Preservatives", "Rich in Fibre"],
     allergenInfo: "Processed in a facility that also processes nuts.",
     storageInstructions: ["Store in a cool, dry place", "Keep away from direct sunlight", "Once opened, keep the jar tightly closed"],
+    bgImages: ["01.png", "02.png", "03.png", "04.png", "05.png", "06.png", "07.png"],
   },
   {
     id: "6",
@@ -241,6 +247,7 @@ export const products: Product[] = [
     highlights: ["Roasted, Not Fried", "High in Protein", "Gluten Free", "No Preservatives", "Rich in Fibre"],
     allergenInfo: "Processed in a facility that also processes nuts.",
     storageInstructions: ["Store in a cool, dry place", "Keep away from direct sunlight", "Once opened, keep the jar tightly closed"],
+    bgImages: ["01.png", "02.png", "03.png", "04.png", "05.png", "06.png", "07.png", "08.png", "09.png", "10.png", "11.png"],
   },
 ];
 

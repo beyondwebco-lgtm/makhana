@@ -5,9 +5,11 @@ import { motion, AnimatePresence } from "framer-motion";
 import Image from "next/image";
 import { ChevronLeft, ChevronRight, ShoppingBag } from "lucide-react";
 import { products } from "@/data/products";
+import { useCart } from "@/context/CartContext";
 
 export default function FlavourShowcase() {
   const [activeIndex, setActiveIndex] = useState(0);
+  const { addToCart } = useCart();
 
   const [clickPos, setClickPos] = useState({ x: 50, y: 50 }); // percentages
 
@@ -268,6 +270,7 @@ export default function FlavourShowcase() {
                 }}
                 onMouseEnter={(e) => { e.currentTarget.style.transform = "translateY(-2px)"; }}
                 onMouseLeave={(e) => { e.currentTarget.style.transform = "translateY(0)"; }}
+                onClick={() => addToCart(activeProduct.slug, 1)}
               >
                 <ShoppingBag size={18} />
                 Add to Cart

@@ -6,9 +6,11 @@ import { ShoppingBag, Eye, Star } from "lucide-react";
 import { useInView } from "@/hooks/useAnimations";
 import { products } from "@/data/products";
 import { staggerContainer, fadeInUp } from "@/lib/animations";
+import { useCart } from "@/context/CartContext";
 
 export default function ProductCollection() {
   const { ref, isInView } = useInView(0.05);
+  const { addToCart } = useCart();
 
   return (
     <section id="products" ref={ref} className="section-padding bg-v-cream">
@@ -111,6 +113,7 @@ export default function ProductCollection() {
                 </div>
 
                 <button
+                  onClick={() => addToCart(product.slug, 1)}
                   className="w-full py-3.5 rounded-full text-[11px] font-[family-name:var(--font-accent)] font-semibold tracking-[1.5px] uppercase flex items-center justify-center gap-2 transition-all duration-400 border border-v-border text-v-black hover:bg-v-black hover:text-white hover:border-v-black"
                 >
                   <ShoppingBag className="w-3.5 h-3.5" />

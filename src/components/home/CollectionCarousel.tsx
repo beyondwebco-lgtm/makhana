@@ -1,10 +1,12 @@
 "use client";
 
 import { useState, useCallback } from "react";
+import Link from "next/link";
 import { motion, AnimatePresence, Variants } from "framer-motion";
 import Image from "next/image";
 import { ChevronLeft, ChevronRight, ShoppingBag } from "lucide-react";
 import { products } from "@/data/products";
+import { useCart } from "@/context/CartContext";
 
 // Easing function for smooth cinematic motion
 const cinematicEase: [number, number, number, number] = [0.25, 1, 0.35, 1]; // highly responsive cubic-bezier
@@ -46,6 +48,7 @@ const imageIdleVariants: Variants = {
 
 export default function CollectionCarousel() {
   const [activeIndex, setActiveIndex] = useState(0);
+  const { addToCart } = useCart();
   const activeProduct = products[activeIndex];
 
   const goTo = useCallback((index: number) => {
@@ -303,32 +306,66 @@ export default function CollectionCarousel() {
                 </span>
               </div>
               
-              {/* Animated Premium Button */}
-              <motion.button
-                whileHover={{ scale: 1.05, boxShadow: `0 12px 32px ${activeProduct.color}80` }}
-                whileTap={{ scale: 0.95 }}
+              <div
                 style={{
-                  display: "inline-flex",
+                  display: "flex",
+                  justifyContent: "center",
                   alignItems: "center",
-                  gap: "8px",
-                  padding: "14px 32px",
-                  borderRadius: "60px",
-                  background: activeProduct.color,
-                  color: "#fff",
-                  fontSize: "13px",
-                  fontWeight: "700",
-                  letterSpacing: "1.5px",
-                  textTransform: "uppercase",
-                  fontFamily: "var(--font-accent)",
-                  border: "none",
-                  cursor: "pointer",
-                  boxShadow: `0 8px 24px ${activeProduct.color}40`,
-                  willChange: "transform, box-shadow",
+                  gap: "12px",
+                  flexWrap: "wrap",
                 }}
               >
-                <ShoppingBag size={16} />
-                Add to Cart
-              </motion.button>
+                <Link href={`/flavours/${activeProduct.slug}`}>
+                  <motion.span
+                    whileHover={{ scale: 1.05, boxShadow: `0 12px 32px ${activeProduct.color}80` }}
+                    whileTap={{ scale: 0.95 }}
+                    style={{
+                      display: "inline-flex",
+                      alignItems: "center",
+                      gap: "8px",
+                      padding: "14px 28px",
+                      borderRadius: "60px",
+                      background: activeProduct.color,
+                      color: "#fff",
+                      fontSize: "13px",
+                      fontWeight: "700",
+                      letterSpacing: "1.5px",
+                      textTransform: "uppercase",
+                      fontFamily: "var(--font-accent)",
+                      border: "none",
+                      cursor: "pointer",
+                      boxShadow: `0 8px 24px ${activeProduct.color}40`,
+                      willChange: "transform, box-shadow",
+                    }}
+                  >
+                    Explore Flavour
+                  </motion.span>
+                </Link>
+                <motion.button
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
+                  style={{
+                    display: "inline-flex",
+                    alignItems: "center",
+                    gap: "8px",
+                    padding: "14px 28px",
+                    borderRadius: "60px",
+                    background: "rgba(255,255,255,0.08)",
+                    color: "#FFF6E0",
+                    fontSize: "13px",
+                    fontWeight: "700",
+                    letterSpacing: "1.5px",
+                    textTransform: "uppercase",
+                    fontFamily: "var(--font-accent)",
+                    border: "1px solid rgba(255,255,255,0.2)",
+                    cursor: "pointer",
+                  }}
+                  onClick={() => addToCart(activeProduct.slug, 1)}
+                >
+                  <ShoppingBag size={16} />
+                  Add to Cart
+                </motion.button>
+              </div>
             </motion.div>
           </motion.div>
         </AnimatePresence>

@@ -1,6 +1,7 @@
 "use client";
 
 import { useRef, useState, useEffect } from "react";
+import Link from "next/link";
 import { motion, AnimatePresence, useScroll, useTransform, Variants } from "framer-motion";
 import Image from "next/image";
 import { products } from "@/data/products";
@@ -98,14 +99,98 @@ function FloatingParticle({ emoji, index }: { emoji: string; index: number }) {
   );
 }
 
+// Background Image Component
+function FloatingBackgroundImage({ src, index }: { src: string; index: number }) {
+  // Asymmetric positioning
+  const isTopLeft = index === 0;
+  
+  // Pick a random corner for the first image, and the opposite for the second
+  const layoutRandomizer = useRef(Math.random() > 0.5);
+  const useTopLeft = layoutRandomizer.current ? isTopLeft : !isTopLeft;
+
+  // For the left image: blurred and lower opacity
+  // For the right image: sharp, high opacity, and multiply blend mode (to remove white background)
+  const isBlurred = isTopLeft; 
+  
+  const blurVal = isBlurred ? Math.floor(Math.random() * (12 - 4 + 1) + 4) : 0; // 4-12px if blurred, 0 if sharp
+  const opacityVal = isBlurred ? Math.random() * (0.5 - 0.3) + 0.3 : Math.random() * (0.95 - 0.85) + 0.85; // 30-50% vs 85-95%
+  
+  const blur = useRef(blurVal);
+  const scale = useRef(Math.random() * (1.5 - 1.2) + 1.2); 
+  const rotation = useRef(Math.random() * 30 - 15); // -15° to +15°
+  const opacity = useRef(opacityVal);
+  const duration = useRef(Math.random() * (15 - 10) + 10); 
+
+  const top = useTopLeft ? '5%' : '60%';
+  const left = useTopLeft ? '2%' : '65%';
+  const width = useTopLeft ? '35%' : '30%';
+
+  return (
+    <motion.div
+      initial={{ 
+        opacity: 0, 
+        scale: scale.current * 0.9, 
+        rotate: rotation.current - 10,
+        y: 40,
+        filter: `blur(${blur.current}px)`
+      }}
+      animate={{ 
+        opacity: opacity.current, 
+        scale: scale.current, 
+        rotate: [rotation.current, rotation.current + 4, rotation.current - 4, rotation.current],
+        y: [0, -20, 0],
+        filter: `blur(${blur.current}px)`
+      }}
+      exit={{ 
+        opacity: 0, 
+        scale: scale.current * 1.1, 
+        filter: `blur(${blur.current + 8}px)` 
+      }}
+      transition={{ 
+        // Entrance animation
+        opacity: { duration: 1.2, ease: "easeOut" },
+        scale: { duration: 1.5, ease: "easeOut" },
+        // Loop animations
+        rotate: { duration: duration.current, repeat: Infinity, ease: "easeInOut", delay: 1.2 },
+        y: { duration: duration.current, repeat: Infinity, ease: "easeInOut", delay: 1.2 }
+      }}
+      style={{
+        position: 'absolute',
+        top,
+        left,
+        width,
+        height: '40%',
+        zIndex: 0,
+        transformOrigin: 'center center',
+        mixBlendMode: isBlurred ? 'normal' : 'multiply',
+      }}
+    >
+      <Image 
+        src={src} 
+        alt="" 
+        fill
+        sizes="35vw"
+        style={{ objectFit: 'contain' }} 
+      />
+    </motion.div>
+  );
+}
+
 export default function FlavorScrollShowcase() {
   const containerRef = useRef<HTMLDivElement>(null);
   const [activeIndex, setActiveIndex] = useState(0);
   const [prevIndex, setPrevIndex] = useState(0);
   const numProducts = products.length;
 
+  const [activeBgImages, setActiveBgImages] = useState<{ src: string; id: string }[]>([]);
+  const [isMounted, setIsMounted] = useState(false);
+
+  useEffect(() => {
+    setIsMounted(true);
+  }, []);
+
   const { scrollYProgress } = useScroll({
-    target: containerRef,
+    target: isMounted ? containerRef : undefined,
     offset: ["start start", "end end"],
   });
 
@@ -132,6 +217,23 @@ export default function FlavorScrollShowcase() {
     });
     return unsubscribe;
   }, [scrollYProgress, numProducts, activeIndex]);
+
+  // Select active background images when index changes
+  useEffect(() => {
+    const product = products[activeIndex];
+    const availableImages = product.bgImages;
+    
+    if (availableImages && availableImages.length >= 2) {
+      // Shuffle array to pick 2 random images
+      const shuffled = [...availableImages].sort(() => 0.5 - Math.random());
+      setActiveBgImages([
+        { src: `/assets/products/${product.slug}/${shuffled[0]}`, id: `${product.slug}-${shuffled[0]}-${Date.now()}-0` },
+        { src: `/assets/products/${product.slug}/${shuffled[1]}`, id: `${product.slug}-${shuffled[1]}-${Date.now()}-1` }
+      ]);
+    } else {
+      setActiveBgImages([]);
+    }
+  }, [activeIndex]);
 
   const product = products[activeIndex];
   const theme = productThemes[product.slug] ?? {
@@ -204,6 +306,22 @@ export default function FlavorScrollShowcase() {
           >
             {allParticles.map((emoji, i) => (
               <FloatingParticle key={i} emoji={emoji} index={i} />
+            ))}
+          </motion.div>
+        </AnimatePresence>
+
+        {/* Dynamic product background images */}
+        <AnimatePresence mode="wait">
+          <motion.div
+            key={product.slug + "-dynamic-bg"}
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.8 }}
+            style={{ position: "absolute", inset: 0, zIndex: 1, pointerEvents: "none" }}
+          >
+            {activeBgImages.map((img, idx) => (
+              <FloatingBackgroundImage key={img.id} src={img.src} index={idx} />
             ))}
           </motion.div>
         </AnimatePresence>
@@ -475,30 +593,32 @@ export default function FlavorScrollShowcase() {
                     </span>
                   </div>
 
-                  <motion.button
-                    whileHover={{ scale: 1.05, y: -2 }}
-                    whileTap={{ scale: 0.97 }}
-                    style={{
-                      display: "inline-flex",
-                      alignItems: "center",
-                      gap: "10px",
-                      padding: "14px 30px",
-                      borderRadius: "60px",
-                      background: "#FFFFFF",
-                      color: "#1A1A1A",
-                      fontSize: "13px",
-                      fontWeight: 800,
-                      letterSpacing: "1.5px",
-                      textTransform: "uppercase",
-                      fontFamily: "var(--font-accent)",
-                      border: "none",
-                      cursor: "pointer",
-                      boxShadow: `0 10px 40px rgba(0,0,0,0.3)`,
-                    }}
-                  >
-                    Explore Flavour
-                    <ArrowRight size={15} />
-                  </motion.button>
+                  <Link href={`/flavours/${product.slug}`}>
+                    <motion.span
+                      whileHover={{ scale: 1.05, y: -2 }}
+                      whileTap={{ scale: 0.97 }}
+                      style={{
+                        display: "inline-flex",
+                        alignItems: "center",
+                        gap: "10px",
+                        padding: "14px 30px",
+                        borderRadius: "60px",
+                        background: "#FFFFFF",
+                        color: "#1A1A1A",
+                        fontSize: "13px",
+                        fontWeight: 800,
+                        letterSpacing: "1.5px",
+                        textTransform: "uppercase",
+                        fontFamily: "var(--font-accent)",
+                        border: "none",
+                        cursor: "pointer",
+                        boxShadow: `0 10px 40px rgba(0,0,0,0.3)`,
+                      }}
+                    >
+                      Explore Flavour
+                      <ArrowRight size={15} />
+                    </motion.span>
+                  </Link>
                 </div>
               </motion.div>
             </AnimatePresence>

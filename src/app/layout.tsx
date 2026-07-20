@@ -44,6 +44,8 @@ export const metadata: Metadata = {
   },
 };
 
+import { CartProvider } from "@/context/CartContext";
+
 export default function RootLayout({
   children,
 }: Readonly<{ children: React.ReactNode }>) {
@@ -63,7 +65,9 @@ export default function RootLayout({
         <link rel="preload" href="/logo.png" as="image" />
       </head>
       <body className="min-h-screen bg-v-cream text-v-black antialiased overflow-x-hidden" suppressHydrationWarning>
-        {children}
+        <CartProvider>
+          {children}
+        </CartProvider>
       </body>
     </html>
   );

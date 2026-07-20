@@ -11,6 +11,7 @@ import Testimonials from "@/components/home/Testimonials";
 import FinalCTA from "@/components/home/FinalCTA";
 import Footer from "@/components/layout/Footer";
 import LoadingScreen from "@/components/layout/LoadingScreen";
+import CustomBowlBuilder from "@/components/home/CustomBowlBuilder";
 
 export default function HomeClient() {
   return (
@@ -21,6 +22,7 @@ export default function HomeClient() {
         <Hero />
         <ScrollAnimation />
         <FlavorScrollShowcase />
+        <CustomBowlBuilder />
         <BrandStory />
         <LifestyleSection />
         <Testimonials />
