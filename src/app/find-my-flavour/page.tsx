@@ -276,13 +276,13 @@ export default function FindMyFlavour() {
                 transition={{ duration: 0.6 }}
                 className="text-center flex flex-col items-center"
               >
-                <span className="inline-flex items-center gap-2 py-1.5 px-5 rounded-full bg-[var(--v-gold)]/10 text-[var(--v-gold)] text-xs uppercase tracking-[4px] font-accent font-bold mb-6 border border-[var(--v-gold)]/20 shadow-[0_0_20px_rgba(212,184,122,0.1)]">
+                <span className="inline-flex items-center gap-2 py-1.5 px-5 rounded-full bg-v-gold/10 text-v-gold text-xs uppercase tracking-[4px] font-accent font-bold mb-6 border border-v-gold/20 shadow-[0_0_20px_rgba(212,184,122,0.1)]">
                   <Sparkles size={14} />
                   Flavour Discovery Engine
                 </span>
                 <h1 className="text-4xl sm:text-6xl font-black uppercase tracking-tight mb-6 leading-none">
                   Find Your <br />
-                  <span className="text-transparent bg-clip-text bg-gradient-to-r from-white via-[#FFF0D4] to-[var(--v-gold)]">
+                  <span className="text-transparent bg-clip-text bg-gradient-to-r from-white via-[#FFF0D4] to-v-gold">
                     Perfect Crunch.
                   </span>
                 </h1>
@@ -294,7 +294,7 @@ export default function FindMyFlavour() {
                   whileHover={{ scale: 1.03 }}
                   whileTap={{ scale: 0.97 }}
                   onClick={startJourney}
-                  className="inline-flex cursor-pointer items-center justify-center gap-2 rounded-full bg-[var(--v-gold)] px-10 py-5 font-[family-name:var(--font-accent)] text-xs font-bold uppercase tracking-widest text-black shadow-lg shadow-[var(--v-gold)]/10 group"
+                  className="inline-flex cursor-pointer items-center justify-center gap-2 rounded-full bg-v-gold px-10 py-5 font-[family-name:var(--font-accent)] text-xs font-bold uppercase tracking-widest text-black shadow-lg shadow-v-gold/10 group"
                 >
                   Start My Flavour Journey
                   <ArrowRight size={14} className="transform group-hover:translate-x-1 transition-transform" />
@@ -381,7 +381,7 @@ export default function FindMyFlavour() {
               >
                 <div className="absolute inset-0 bg-gradient-to-b from-white/5 to-transparent pointer-events-none -z-10" />
                 <div className="flex justify-between items-center mb-8">
-                  <span className="text-[var(--v-gold)] text-xs uppercase tracking-[3px] font-accent font-bold">
+                  <span className="text-v-gold text-xs uppercase tracking-[3px] font-accent font-bold">
                     Question {QUESTIONS[currentQuestionIndex].id} of {QUESTIONS.length}
                   </span>
                   <div className="flex gap-1">
@@ -389,7 +389,7 @@ export default function FindMyFlavour() {
                       <div
                         key={idx}
                         className={`h-1.5 rounded-full transition-all duration-300 ${
-                          idx <= currentQuestionIndex ? "w-6 bg-[var(--v-gold)]" : "w-2 bg-white/10"
+                          idx <= currentQuestionIndex ? "w-6 bg-v-gold" : "w-2 bg-white/10"
                         }`}
                       />
                     ))}
@@ -413,8 +413,8 @@ export default function FindMyFlavour() {
                         <span className="text-2xl">{opt.icon}</span>
                         <span className="font-medium text-white/80 group-hover:text-white transition">{opt.label}</span>
                       </div>
-                      <div className="h-6 w-6 rounded-full border border-white/10 flex items-center justify-center group-hover:border-[var(--v-gold)]/40 group-hover:bg-[var(--v-gold)]/10 transition">
-                        <Check size={12} className="text-[var(--v-gold)] opacity-0 group-hover:opacity-100 transition" />
+                      <div className="h-6 w-6 rounded-full border border-white/10 flex items-center justify-center group-hover:border-v-gold/40 group-hover:bg-v-gold/10 transition">
+                        <Check size={12} className="text-v-gold opacity-0 group-hover:opacity-100 transition" />
                       </div>
                     </motion.button>
                   ))}
@@ -435,7 +435,7 @@ export default function FindMyFlavour() {
                 <motion.div
                   animate={{ rotate: 360 }}
                   transition={{ repeat: Infinity, duration: 2, ease: "linear" }}
-                  className="text-[var(--v-gold)] mb-8"
+                  className="text-v-gold mb-8"
                 >
                   <RefreshCw size={48} strokeWidth={1.5} />
                 </motion.div>
@@ -450,7 +450,7 @@ export default function FindMyFlavour() {
                 {/* Progress bar container */}
                 <div className="w-full max-w-xs h-1.5 bg-white/5 rounded-full overflow-hidden border border-white/5">
                   <motion.div
-                    className="h-full bg-[var(--v-gold)]"
+                    className="h-full bg-v-gold"
                     style={{ width: `${analysisProgress}%` }}
                   />
                 </div>
@@ -469,7 +469,7 @@ export default function FindMyFlavour() {
                 
                 {/* Profile frame bubble if selfie taken */}
                 {capturedImage && (
-                  <div className="relative w-20 h-20 rounded-full overflow-hidden border-2 border-[var(--v-gold)] mb-6 shadow-lg shadow-[var(--v-gold)]/10">
+                  <div className="relative w-20 h-20 rounded-full overflow-hidden border-2 border-v-gold mb-6 shadow-lg shadow-v-gold/10">
                     <img
                       src={capturedImage}
                       alt="Selfie preview"
@@ -478,7 +478,7 @@ export default function FindMyFlavour() {
                   </div>
                 )}
 
-                <span className="text-[var(--v-gold)] text-xs uppercase tracking-[4px] font-accent font-bold mb-3 block">
+                <span className="text-v-gold text-xs uppercase tracking-[4px] font-accent font-bold mb-3 block">
                   Your Perfect Match
                 </span>
                 <h2 className="text-3xl sm:text-5xl font-black uppercase tracking-tight mb-8">
@@ -508,7 +508,7 @@ export default function FindMyFlavour() {
                     <motion.span
                       whileHover={{ scale: 1.03 }}
                       whileTap={{ scale: 0.97 }}
-                      className="inline-flex cursor-pointer items-center justify-center gap-2 rounded-full bg-[var(--v-gold)] px-8 py-4 font-[family-name:var(--font-accent)] text-xs font-bold uppercase tracking-widest text-black shadow-lg shadow-[var(--v-gold)]/10"
+                      className="inline-flex cursor-pointer items-center justify-center gap-2 rounded-full bg-v-gold px-8 py-4 font-[family-name:var(--font-accent)] text-xs font-bold uppercase tracking-widest text-black shadow-lg shadow-v-gold/10"
                     >
                       Explore This Flavour
                       <ArrowRight size={14} />
