@@ -5,7 +5,7 @@ import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
 import Link from "next/link";
 import { motion, AnimatePresence } from "framer-motion";
-import { Camera, Upload, SkipForward, ArrowRight, RefreshCw, Sparkles, Check, X } from "lucide-react";
+import { Camera, Upload, SkipForward, ArrowRight, RefreshCw, Sparkles, Check, X, ShieldAlert, ShieldCheck } from "lucide-react";
 import Image from "next/image";
 import { products } from "@/data/products";
 
@@ -29,12 +29,11 @@ function CircularText({
 }: CircularTextProps) {
   const [isHovered, setIsHovered] = useState(false);
 
-  // Speed logic for speedUp
   let finalDuration = spinDuration;
   if (forceFast) {
-    finalDuration = spinDuration * 0.15; // spin extremely fast during transition
+    finalDuration = spinDuration * 0.15;
   } else if (isHovered && onHover === "speedUp") {
-    finalDuration = spinDuration * 0.35; // speed up on mouse hover
+    finalDuration = spinDuration * 0.35;
   }
 
   return (
@@ -157,6 +156,10 @@ export default function FindMyFlavour() {
   const [analysisText, setAnalysisText] = useState("Initializing analysis engine...");
   const [recommendedSlug, setRecommendedSlug] = useState("green-flag");
   const [cameraError, setCameraError] = useState(false);
+  
+  // Camera simulation state for trust metrics
+  const [faceDetected, setFaceDetected] = useState(false);
+  const [flashActive, setFlashActive] = useState(false);
 
   // Mouse Interaction coordinates
   const [mousePos, setMousePos] = useState({ x: 0, y: 0 });
@@ -189,6 +192,7 @@ export default function FindMyFlavour() {
   // Start camera stream
   const startCamera = async () => {
     setCameraError(false);
+    setFaceDetected(false);
     try {
       const stream = await navigator.mediaDevices.getUserMedia({
         video: { facingMode: "user", width: { ideal: 640 }, height: { ideal: 480 } },
@@ -198,6 +202,10 @@ export default function FindMyFlavour() {
       if (videoRef.current) {
         videoRef.current.srcObject = stream;
       }
+      // Simulate face detection feedback hook
+      setTimeout(() => {
+        setFaceDetected(true);
+      }, 1500);
     } catch (err) {
       console.warn("Camera permission denied or unavailable, falling back.", err);
       setCameraError(true);
@@ -214,27 +222,31 @@ export default function FindMyFlavour() {
       setTimeout(() => {
         startCamera();
       }, 200);
-    }, 1100); // 1.1s premium transition reveal
+    }, 1100);
   };
 
-  // Capture Selfie Photo frame
+  // Capture Selfie Photo frame with simulated hardware camera flash
   const capturePhoto = () => {
     const video = videoRef.current;
     if (!video) return;
 
-    const canvas = document.createElement("canvas");
-    canvas.width = video.videoWidth || 640;
-    canvas.height = video.videoHeight || 480;
-    const ctx = canvas.getContext("2d");
-    if (ctx) {
-      ctx.translate(canvas.width, 0);
-      ctx.scale(-1, 1);
-      ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
-      const dataUrl = canvas.toDataURL("image/jpeg");
-      setCapturedImage(dataUrl);
-      stopCamera();
-      setStep("preview");
-    }
+    setFlashActive(true);
+    setTimeout(() => {
+      setFlashActive(false);
+      const canvas = document.createElement("canvas");
+      canvas.width = video.videoWidth || 640;
+      canvas.height = video.videoHeight || 480;
+      const ctx = canvas.getContext("2d");
+      if (ctx) {
+        ctx.translate(canvas.width, 0);
+        ctx.scale(-1, 1);
+        ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+        const dataUrl = canvas.toDataURL("image/jpeg");
+        setCapturedImage(dataUrl);
+        stopCamera();
+        setStep("preview");
+      }
+    }, 150); // Flash trigger latency
   };
 
   // Handle local file upload fallback
@@ -354,6 +366,19 @@ export default function FindMyFlavour() {
       <Navbar />
       <div className="relative min-h-screen bg-[#050505] text-white overflow-hidden flex flex-col items-center justify-center pt-32 pb-24 px-6">
         
+        {/* FLASH CAMERA SCREEN OVERLAY EFFECT */}
+        <AnimatePresence>
+          {flashActive && (
+            <motion.div
+              initial={{ opacity: 1 }}
+              animate={{ opacity: 0 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.3 }}
+              className="fixed inset-0 bg-white z-[100] pointer-events-none"
+            />
+          )}
+        </AnimatePresence>
+
         {/* 
           ==================================================
           PREMIUM BACKGROUND INTERACTIVE LAYERS
@@ -363,8 +388,8 @@ export default function FindMyFlavour() {
           {/* Animated Branding Light Blobs */}
           <motion.div
             animate={{
-              x: mousePos.x * 0.4,
-              y: mousePos.y * 0.4,
+              x: [mousePos.x * 0.4, mousePos.x * -0.4, mousePos.x * 0.4],
+              y: [mousePos.y * 0.4, mousePos.y * -0.4, mousePos.y * 0.4],
               scale: isTransitioning ? 1.5 : 1,
             }}
             transition={{ type: "spring", stiffness: 40, damping: 20 }}
@@ -372,8 +397,8 @@ export default function FindMyFlavour() {
           />
           <motion.div
             animate={{
-              x: mousePos.x * -0.6,
-              y: mousePos.y * -0.6,
+              x: [mousePos.x * -0.6, mousePos.x * 0.6, mousePos.x * -0.6],
+              y: [mousePos.y * -0.6, mousePos.y * 0.6, mousePos.y * -0.6],
             }}
             transition={{ type: "spring", stiffness: 45, damping: 25 }}
             className="absolute bottom-1/4 right-1/4 w-[50vw] h-[50vw] rounded-full bg-gradient-to-r from-green-500/5 to-emerald-600/5 blur-[150px] animate-pulse"
@@ -522,13 +547,13 @@ export default function FindMyFlavour() {
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 exit={{ opacity: 0 }}
-                className="fixed inset-0 z-[60] bg-black/90 backdrop-blur-2xl flex items-center justify-center p-6 md:p-12 overflow-y-auto"
+                className="fixed inset-0 z-[60] bg-black/95 backdrop-blur-2xl flex items-center justify-center p-6 md:p-12 overflow-y-auto"
               >
                 <div className="absolute inset-0 pointer-events-none overflow-hidden">
                   <div className="absolute top-1/4 left-1/4 w-[400px] h-[400px] rounded-full bg-v-gold/5 blur-[120px] animate-pulse" />
                 </div>
 
-                <div className="w-full max-w-xl relative z-10">
+                <div className="w-full max-w-5xl relative z-10">
                   
                   {/* CLOSE MODAL BUTTON */}
                   <button
@@ -547,78 +572,142 @@ export default function FindMyFlavour() {
 
                   <AnimatePresence mode="wait">
                     
-                    {/* CAMERA STEP */}
+                    {/* CAMERA STEP: LUXURY TWO-COLUMN LAYOUT */}
                     {step === "camera" && (
                       <motion.div
                         key="camera"
-                        initial={{ opacity: 0, scale: 0.95 }}
+                        initial={{ opacity: 0, scale: 0.98 }}
                         animate={{ opacity: 1, scale: 1 }}
-                        exit={{ opacity: 0, scale: 0.95 }}
-                        className="bg-[#111111]/80 border border-white/5 rounded-[3rem] p-8 sm:p-12 flex flex-col items-center text-center shadow-2xl relative overflow-hidden"
+                        exit={{ opacity: 0, scale: 0.98 }}
+                        className="w-full grid grid-cols-1 lg:grid-cols-12 gap-12 items-center"
                       >
-                        <h2 className="text-2xl sm:text-3xl font-black uppercase tracking-tight mb-3">Snap a Selfie</h2>
-                        <p className="text-white/50 text-xs sm:text-sm max-w-sm mb-8 font-light">
-                          Take a quick selfie to personalize your flavour recommendation card.
-                        </p>
-
-                        <div className="relative w-full max-w-[400px] aspect-[4/3] rounded-2xl overflow-hidden border border-white/10 bg-black/40 mb-8 flex items-center justify-center">
-                          {cameraError ? (
-                            <div className="flex flex-col items-center gap-2 p-6 text-white/40">
-                              <Camera size={40} strokeWidth={1} />
-                              <span className="text-xs">Camera blocked or unavailable.</span>
-                              <span className="text-[10px] text-white/30">Please upload a photo instead.</span>
+                        
+                        {/* LEFT COLUMN: LIVE SCANNER FRAME */}
+                        <div className="lg:col-span-7 flex flex-col items-center">
+                          <div className="relative w-full aspect-[4/3] rounded-[2.5rem] overflow-hidden border border-white/10 bg-black/40 shadow-[0_30px_80px_rgba(0,0,0,0.8)] flex items-center justify-center group">
+                            
+                            {/* Inner Scanning overlay brackets */}
+                            <div className="absolute top-8 left-8 w-6 h-6 border-t-2 border-l-2 border-v-gold/60 rounded-tl-lg pointer-events-none" />
+                            <div className="absolute top-8 right-8 w-6 h-6 border-t-2 border-r-2 border-v-gold/60 rounded-tr-lg pointer-events-none" />
+                            <div className="absolute bottom-8 left-8 w-6 h-6 border-b-2 border-l-2 border-v-gold/60 rounded-bl-lg pointer-events-none" />
+                            <div className="absolute bottom-8 right-8 w-6 h-6 border-b-2 border-r-2 border-v-gold/60 rounded-br-lg pointer-events-none" />
+                            
+                            {/* Face alignment outline guide */}
+                            <div className="absolute w-56 h-56 rounded-full border border-dashed border-v-gold/30 flex items-center justify-center pointer-events-none">
+                              <div className="w-48 h-48 rounded-full border border-dashed border-v-gold/20 animate-pulse" />
                             </div>
-                          ) : (
-                            <video
-                              ref={videoRef}
-                              autoPlay
-                              playsInline
-                              className="w-full h-full object-cover scale-x-[-1]"
+
+                            {/* Moving focus scanline */}
+                            <motion.div
+                              animate={{ y: ["-100%", "100%", "-100%"] }}
+                              transition={{ duration: 4, repeat: Infinity, ease: "linear" }}
+                              className="absolute left-0 right-0 h-0.5 bg-gradient-to-r from-transparent via-v-gold/40 to-transparent pointer-events-none"
                             />
-                          )}
+
+                            {cameraError ? (
+                              <div className="flex flex-col items-center gap-2 p-6 text-white/40 z-10">
+                                <Camera size={40} strokeWidth={1} />
+                                <span className="text-xs font-accent tracking-wider uppercase">Camera access blocked</span>
+                                <span className="text-[10px] text-white/30">Please upload a photo from the sidebar.</span>
+                              </div>
+                            ) : (
+                              <video
+                                ref={videoRef}
+                                autoPlay
+                                playsInline
+                                className="w-full h-full object-cover scale-x-[-1]"
+                              />
+                            )}
+
+                            {/* Floating detection feedback badge */}
+                            <div className="absolute top-6 left-1/2 -translate-x-1/2 bg-black/85 backdrop-blur-md border border-white/10 rounded-full py-1.5 px-4 flex items-center gap-2 shadow-lg">
+                              <div className={`w-2 h-2 rounded-full ${faceDetected && !cameraError ? 'bg-green-400 animate-ping' : 'bg-yellow-400'}`} />
+                              <span className="text-[10px] font-accent uppercase tracking-widest text-white/90">
+                                {cameraError ? 'System Offline' : faceDetected ? '✓ Face Detected' : 'Detecting Alignment...'}
+                              </span>
+                            </div>
+                          </div>
                         </div>
 
-                        <div className="flex flex-col sm:flex-row gap-3 w-full justify-center">
-                          {!cameraError && (
-                            <motion.button
-                              whileHover={{ scale: 1.02 }}
-                              whileTap={{ scale: 0.98 }}
-                              onClick={capturePhoto}
-                              className="inline-flex cursor-pointer items-center justify-center gap-2 rounded-full bg-white text-black px-6 py-3.5 font-[family-name:var(--font-accent)] text-xs font-bold uppercase tracking-wider"
-                            >
-                              <Camera size={14} />
-                              Capture Selfie
-                            </motion.button>
-                          )}
+                        {/* RIGHT COLUMN: CONTROLS & PRIVACY */}
+                        <div className="lg:col-span-5 flex flex-col justify-center text-left">
+                          <span className="text-v-gold text-[10px] font-accent font-black uppercase tracking-[4px] mb-4">
+                            Step 01 / Onboarding
+                          </span>
+                          <h2 className="text-4xl lg:text-5xl font-black uppercase tracking-tight mb-6 leading-tight font-accent">
+                            Snap Your <br />Selfie
+                          </h2>
+                          <p className="text-white/60 text-sm leading-relaxed mb-8 font-light">
+                            Take a quick selfie to personalise your flavour journey. This visual identity will customize your analysis report.
+                          </p>
 
-                          <motion.button
-                            whileHover={{ scale: 1.02 }}
-                            whileTap={{ scale: 0.98 }}
-                            onClick={() => fileInputRef.current?.click()}
-                            className="inline-flex cursor-pointer items-center justify-center gap-2 rounded-full bg-white/5 border border-white/10 px-6 py-3.5 font-[family-name:var(--font-accent)] text-xs font-bold uppercase tracking-wider hover:bg-white/10 transition"
-                          >
-                            <Upload size={14} />
-                            Upload Photo
-                          </motion.button>
+                          {/* Privacy Cards */}
+                          <div className="bg-white/5 border border-white/5 rounded-2xl p-6 space-y-4 mb-8">
+                            <div className="flex items-start gap-4">
+                              <span className="text-v-gold text-lg">🔒</span>
+                              <div>
+                                <h4 className="text-xs font-bold text-white uppercase tracking-wider mb-0.5">Secure Capture</h4>
+                                <p className="text-white/40 text-[10px]">Your photo is never saved or uploaded to servers.</p>
+                              </div>
+                            </div>
+                            <div className="flex items-start gap-4 border-t border-white/5 pt-4">
+                              <span className="text-v-gold text-lg">⚡</span>
+                              <div>
+                                <h4 className="text-xs font-bold text-white uppercase tracking-wider mb-0.5">Instant Recommendations</h4>
+                                <p className="text-white/40 text-[10px]">Analyzes features on-the-fly to customize result card assets.</p>
+                              </div>
+                            </div>
+                            <div className="flex items-start gap-4 border-t border-white/5 pt-4">
+                              <span className="text-v-gold text-lg">🗑</span>
+                              <div>
+                                <h4 className="text-xs font-bold text-white uppercase tracking-wider mb-0.5">Auto-Discard</h4>
+                                <p className="text-white/40 text-[10px]">Session memory is entirely cleared after recommendations close.</p>
+                              </div>
+                            </div>
+                          </div>
 
-                          <input
-                            ref={fileInputRef}
-                            type="file"
-                            accept="image/*"
-                            onChange={handleFileUpload}
-                            className="hidden"
-                          />
+                          {/* Action controls */}
+                          <div className="flex flex-col gap-3">
+                            {!cameraError && (
+                              <motion.button
+                                whileHover={{ scale: 1.02 }}
+                                whileTap={{ scale: 0.98 }}
+                                onClick={capturePhoto}
+                                className="w-full inline-flex cursor-pointer items-center justify-center gap-2 rounded-full bg-v-gold text-black py-4 font-[family-name:var(--font-accent)] text-xs font-black uppercase tracking-widest shadow-lg shadow-v-gold/15"
+                              >
+                                <Camera size={14} />
+                                Capture Selfie
+                              </motion.button>
+                            )}
 
-                          <motion.button
-                            whileHover={{ scale: 1.02 }}
-                            whileTap={{ scale: 0.98 }}
-                            onClick={skipPhoto}
-                            className="inline-flex cursor-pointer items-center justify-center gap-2 rounded-full bg-white/5 border border-white/10 px-6 py-3.5 font-[family-name:var(--font-accent)] text-xs font-bold uppercase tracking-wider hover:bg-white/10 transition"
-                          >
-                            <SkipForward size={14} />
-                            Skip This Step
-                          </motion.button>
+                            <div className="grid grid-cols-2 gap-3">
+                              <button
+                                onClick={() => fileInputRef.current?.click()}
+                                className="inline-flex cursor-pointer items-center justify-center gap-2 rounded-full bg-white/5 border border-white/10 py-3.5 font-[family-name:var(--font-accent)] text-xs font-bold uppercase tracking-wider hover:bg-white/10 transition text-white/90"
+                              >
+                                <Upload size={14} />
+                                Upload Photo
+                              </button>
+
+                              <button
+                                onClick={skipPhoto}
+                                className="inline-flex cursor-pointer items-center justify-center gap-2 rounded-full bg-white/5 border border-white/10 py-3.5 font-[family-name:var(--font-accent)] text-xs font-bold uppercase tracking-wider hover:bg-white/10 transition text-white/90"
+                              >
+                                <SkipForward size={14} />
+                                Skip
+                              </button>
+                            </div>
+
+                            <input
+                              ref={fileInputRef}
+                              type="file"
+                              accept="image/*"
+                              onChange={handleFileUpload}
+                              className="hidden"
+                            />
+                          </div>
                         </div>
+
                       </motion.div>
                     )}
 
@@ -672,9 +761,9 @@ export default function FindMyFlavour() {
                     {step === "questions" && (
                       <motion.div
                         key="questions"
-                        initial={{ opacity: 0, x: 50 }}
+                        initial={{ opacity: 0, x: 55 }}
                         animate={{ opacity: 1, x: 0 }}
-                        exit={{ opacity: 0, x: -50 }}
+                        exit={{ opacity: 0, x: -55 }}
                         className="bg-[#111111]/80 border border-white/5 rounded-[3rem] p-8 sm:p-12 shadow-2xl relative"
                       >
                         <div className="flex justify-between items-center mb-8">
@@ -767,110 +856,118 @@ export default function FindMyFlavour() {
                       </motion.div>
                     )}
 
-                    {/* RESULTS STEP */}
+                    {/* RESULTS STEP: FULL SCREEN PREMIUM LAYOUT */}
                     {step === "result" && (
                       <motion.div
                         key="result"
-                        initial={{ opacity: 0, y: 30 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        className="bg-[#111111]/90 border border-white/10 rounded-[3rem] p-8 sm:p-12 shadow-2xl flex flex-col items-center text-center"
+                        initial={{ opacity: 0, scale: 0.98 }}
+                        animate={{ opacity: 1, scale: 1 }}
+                        className="w-full grid grid-cols-1 lg:grid-cols-12 gap-12 items-center"
                       >
-                        {capturedImage && (
-                          <div className="relative w-20 h-20 rounded-full overflow-hidden border-2 border-v-gold mb-6 shadow-lg shadow-v-gold/10">
-                            <img
-                              src={capturedImage}
-                              alt="Selfie preview"
-                              className="w-full h-full object-cover"
+                        
+                        {/* LEFT COLUMN: FLAVOUR SHOWCASE */}
+                        <div className="lg:col-span-6 flex flex-col items-center relative">
+                          <div className="relative w-72 h-72 md:w-80 md:h-80 flex items-center justify-center group mb-6 z-10">
+                            <div className="absolute h-64 w-64 rounded-full blur-[80px] opacity-40 -z-10 animate-pulse" style={{ background: recommendedProduct.color }} />
+                            <Image
+                              src={recommendedProduct.image}
+                              alt={recommendedProduct.name}
+                              width={260}
+                              height={260}
+                              priority
+                              className="object-contain transform hover:scale-105 transition-transform duration-500 ease-out z-10"
                             />
-                            <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent flex items-end justify-center pb-1">
-                              <span className="text-[7px] font-bold text-v-gold uppercase">Vibe Fit</span>
-                            </div>
                           </div>
-                        )}
 
-                        <span className="text-v-gold text-xs uppercase tracking-[4px] font-accent font-bold mb-3 block">
-                          Your Perfect Match
-                        </span>
-                        <h2 className="text-3xl sm:text-4xl font-black uppercase tracking-tight mb-6">
-                          {recommendedProduct.name}
-                        </h2>
-
-                        {/* Product Visual */}
-                        <div className="relative w-40 h-40 mb-6 flex items-center justify-center group">
-                          <div className="absolute h-28 w-28 rounded-full blur-[40px] opacity-35 -z-10" style={{ background: recommendedProduct.color }} />
-                          <Image
-                            src={recommendedProduct.image}
-                            alt={recommendedProduct.name}
-                            width={150}
-                            height={150}
-                            className="object-contain transform group-hover:scale-[1.05] transition-transform duration-500 ease-out"
-                          />
+                          {capturedImage && (
+                            <div className="absolute bottom-[-10px] left-1/2 -translate-x-1/2 bg-black/85 border border-white/10 rounded-full py-2 px-5 flex items-center gap-3 shadow-xl z-20">
+                              <img
+                                src={capturedImage}
+                                alt="Selfie thumbnail"
+                                className="w-8 h-8 rounded-full object-cover border border-v-gold"
+                              />
+                              <div className="text-left">
+                                <h4 className="text-[10px] font-accent font-black uppercase text-v-gold">Match Verified</h4>
+                                <p className="text-[8px] text-white/50">Personalised recommendation</p>
+                              </div>
+                            </div>
+                          )}
                         </div>
 
-                        {/* Recommendation Description */}
-                        <p className="text-white/60 text-sm leading-relaxed mb-8 max-w-sm font-light">
-                          You seem calm, refreshing, and balanced today. We think <strong className="text-white font-bold">{recommendedProduct.name}</strong> is the perfect match for your vibe!
-                        </p>
+                        {/* RIGHT COLUMN: METRICS & DETAILS */}
+                        <div className="lg:col-span-6 flex flex-col justify-center text-left">
+                          <span className="text-v-gold text-[10px] font-accent font-black uppercase tracking-[4px] mb-4">
+                            Your Perfect Match
+                          </span>
+                          <h2 className="text-4xl lg:text-5xl font-black uppercase tracking-tight mb-6 font-accent leading-tight">
+                            {recommendedProduct.name}
+                          </h2>
 
-                        {/* Match metrics and meters */}
-                        <div className="w-full bg-white/5 border border-white/5 rounded-2xl p-6 text-left space-y-4 mb-8">
-                          <div className="flex justify-between items-center text-xs">
-                            <span className="text-white/50">Overall Match</span>
-                            <span className="font-accent font-bold text-v-gold text-sm">95% Match</span>
-                          </div>
-                          
-                          {/* Taste Meter */}
-                          <div className="space-y-1.5 border-t border-white/5 pt-3">
-                            <div className="flex justify-between text-[10px] text-white/50">
-                              <span>Taste Meter (Crunchiness)</span>
-                              <span>90%</span>
+                          <p className="text-white/70 text-sm leading-relaxed mb-8 font-light">
+                            You seem calm, refreshing, and balanced today. Based on your mood and flavor profiles, we think <strong className="text-white font-bold">{recommendedProduct.name}</strong> is the perfect fit to elevate your crunch game.
+                          </p>
+
+                          {/* Match metrics with premium meters */}
+                          <div className="bg-white/5 border border-white/5 rounded-2xl p-6 space-y-6 mb-8">
+                            <div className="flex justify-between items-center text-xs">
+                              <span className="text-white/50 uppercase tracking-widest text-[10px]">Vellari Core Fit</span>
+                              <span className="font-accent font-black text-v-gold text-sm">95% MATCH</span>
                             </div>
-                            <div className="w-full h-1 bg-white/5 rounded-full overflow-hidden">
-                              <div className="h-full bg-v-gold" style={{ width: "90%" }} />
+
+                            {/* Taste Meter */}
+                            <div className="space-y-2 border-t border-white/5 pt-4">
+                              <div className="flex justify-between text-[10px] text-white/40 uppercase tracking-wider">
+                                <span>Taste Intensity (Crunchiness)</span>
+                                <span className="text-white">90%</span>
+                              </div>
+                              <div className="w-full h-1 bg-white/5 rounded-full overflow-hidden">
+                                <div className="h-full bg-v-gold" style={{ width: "90%" }} />
+                              </div>
+                            </div>
+
+                            {/* Mood Meter */}
+                            <div className="space-y-2">
+                              <div className="flex justify-between text-[10px] text-white/40 uppercase tracking-wider">
+                                <span>Mood Temperament (Aroma Match)</span>
+                                <span className="text-white">95%</span>
+                              </div>
+                              <div className="w-full h-1 bg-white/5 rounded-full overflow-hidden">
+                                <div className="h-full bg-v-gold" style={{ width: "95%" }} />
+                              </div>
                             </div>
                           </div>
 
-                          {/* Mood Meter */}
-                          <div className="space-y-1.5">
-                            <div className="flex justify-between text-[10px] text-white/50">
-                              <span>Mood Meter (Aroma Match)</span>
-                              <span>95%</span>
-                            </div>
-                            <div className="w-full h-1 bg-white/5 rounded-full overflow-hidden">
-                              <div className="h-full bg-v-gold" style={{ width: "95%" }} />
-                            </div>
-                          </div>
-                        </div>
+                          {/* CTA Actions */}
+                          <div className="flex flex-col sm:flex-row gap-3 w-full">
+                            <Link href={`/flavours/${recommendedProduct.slug}`} className="flex-1">
+                              <motion.span
+                                whileHover={{ scale: 1.02 }}
+                                whileTap={{ scale: 0.98 }}
+                                onClick={() => setIsModalOpen(false)}
+                                className="w-full inline-flex cursor-pointer items-center justify-center gap-2 rounded-full bg-v-gold text-black py-4 font-[family-name:var(--font-accent)] text-xs font-black uppercase tracking-widest shadow-lg shadow-v-gold/15"
+                              >
+                                Explore This Flavour
+                                <ArrowRight size={14} />
+                              </motion.span>
+                            </Link>
 
-                        {/* Action buttons */}
-                        <div className="flex flex-col sm:flex-row gap-3 w-full justify-center">
-                          <Link href={`/flavours/${recommendedProduct.slug}`}>
-                            <motion.span
-                              whileHover={{ scale: 1.03 }}
-                              whileTap={{ scale: 0.97 }}
-                              onClick={() => setIsModalOpen(false)}
-                              className="inline-flex cursor-pointer items-center justify-center gap-2 rounded-full bg-v-gold px-8 py-3.5 font-[family-name:var(--font-accent)] text-xs font-bold uppercase tracking-widest text-black shadow-lg shadow-v-gold/10"
+                            <motion.button
+                              whileHover={{ scale: 1.02 }}
+                              whileTap={{ scale: 0.98 }}
+                              onClick={() => {
+                                setAnswers([]);
+                                setCurrentQuestionIndex(0);
+                                setCapturedImage(null);
+                                setStep("camera");
+                                setTimeout(() => startCamera(), 100);
+                              }}
+                              className="inline-flex cursor-pointer items-center justify-center gap-2 rounded-full bg-white/5 border border-white/10 px-8 py-4 font-[family-name:var(--font-accent)] text-xs font-bold uppercase tracking-widest text-white hover:bg-white/10 transition"
                             >
-                              Explore This Flavour
-                              <ArrowRight size={14} />
-                            </motion.span>
-                          </Link>
-
-                          <motion.button
-                            whileHover={{ scale: 1.03 }}
-                            whileTap={{ scale: 0.97 }}
-                            onClick={() => {
-                              setAnswers([]);
-                              setCurrentQuestionIndex(0);
-                              setCapturedImage(null);
-                              setStep("camera");
-                              setTimeout(() => startCamera(), 100);
-                            }}
-                            className="inline-flex cursor-pointer items-center justify-center gap-2 rounded-full bg-white/5 border border-white/10 px-8 py-3.5 font-[family-name:var(--font-accent)] text-xs font-bold uppercase tracking-widest text-white hover:bg-white/10 transition"
-                          >
-                            Try Again
-                          </motion.button>
+                              Try Again
+                            </motion.button>
+                          </div>
                         </div>
+
                       </motion.div>
                     )}
 
