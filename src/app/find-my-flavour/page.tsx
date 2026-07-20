@@ -10,24 +10,40 @@ import Image from "next/image";
 import { products } from "@/data/products";
 
 // ----------------------------------------------------
-// Circular Text Component (SVG textPath + Framer Motion)
+// React Bits Circular Text (SVG textPath + speedUp on hover)
 // ----------------------------------------------------
 interface CircularTextProps {
   text?: string;
   spinDuration?: number;
+  onHover?: "speedUp" | "slowDown" | "pause" | "none";
   className?: string;
+  forceFast?: boolean;
 }
 
 function CircularText({
   text = "VELLARI • PREMIUM • MAKHANA • DISCOVER • YOUR • PERFECT • FLAVOUR • ",
   spinDuration = 18,
+  onHover = "speedUp",
   className = "",
+  forceFast = false,
 }: CircularTextProps) {
+  const [isHovered, setIsHovered] = useState(false);
+
+  // Speed logic for speedUp
+  let finalDuration = spinDuration;
+  if (forceFast) {
+    finalDuration = spinDuration * 0.15; // spin extremely fast during transition
+  } else if (isHovered && onHover === "speedUp") {
+    finalDuration = spinDuration * 0.35; // speed up on mouse hover
+  }
+
   return (
     <motion.div
-      className={`pointer-events-none select-none ${className}`}
+      className={`select-none cursor-pointer ${className}`}
+      onMouseEnter={() => setIsHovered(true)}
+      onMouseLeave={() => setIsHovered(false)}
       animate={{ rotate: 360 }}
-      transition={{ repeat: Infinity, duration: spinDuration, ease: "linear" }}
+      transition={{ repeat: Infinity, duration: finalDuration, ease: "linear" }}
     >
       <svg viewBox="0 0 200 200" className="w-full h-full overflow-visible">
         <path
@@ -121,7 +137,6 @@ const QUESTIONS: Question[] = [
   },
 ];
 
-// Slugs mapping score profile helper
 const FLAVOUR_SCORES: Record<string, Record<string, number>> = {
   "love-bite": { cheesy: 4, comfort: 3, relaxed: 2, happy: 2, yellow: 3, movies: 2 },
   "blush": { tangy: 4, adventure: 3, excited: 2, orange: 3, friends: 2 },
@@ -134,6 +149,7 @@ const FLAVOUR_SCORES: Record<string, Record<string, number>> = {
 export default function FindMyFlavour() {
   const [step, setStep] = useState<"landing" | "camera" | "preview" | "questions" | "analyzing" | "result">("landing");
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isTransitioning, setIsTransitioning] = useState(false);
   const [capturedImage, setCapturedImage] = useState<string | null>(null);
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
   const [answers, setAnswers] = useState<string[]>([]);
@@ -154,8 +170,8 @@ export default function FindMyFlavour() {
   useEffect(() => {
     const handleMouseMove = (e: MouseEvent) => {
       setMousePos({
-        x: (e.clientX / window.innerWidth - 0.5) * 30,
-        y: (e.clientY / window.innerHeight - 0.5) * 30,
+        x: (e.clientX / window.innerWidth - 0.5) * 35,
+        y: (e.clientY / window.innerHeight - 0.5) * 35,
       });
     };
     window.addEventListener("mousemove", handleMouseMove);
@@ -190,11 +206,15 @@ export default function FindMyFlavour() {
 
   // Handle step transitions with premium zoom transition delays
   const startJourney = () => {
-    setIsModalOpen(true);
-    setStep("camera");
+    setIsTransitioning(true);
     setTimeout(() => {
-      startCamera();
-    }, 300);
+      setIsModalOpen(true);
+      setStep("camera");
+      setIsTransitioning(false);
+      setTimeout(() => {
+        startCamera();
+      }, 200);
+    }, 1100); // 1.1s premium transition reveal
   };
 
   // Capture Selfie Photo frame
@@ -345,6 +365,7 @@ export default function FindMyFlavour() {
             animate={{
               x: [mousePos.x * 0.4, mousePos.x * -0.4, mousePos.x * 0.4],
               y: [mousePos.y * 0.4, mousePos.y * -0.4, mousePos.y * 0.4],
+              scale: isTransitioning ? 1.5 : 1,
             }}
             transition={{ type: "spring", stiffness: 40, damping: 20 }}
             className="absolute top-1/4 left-1/4 w-[60vw] h-[60vw] rounded-full bg-gradient-to-r from-v-gold/5 to-yellow-600/5 blur-[160px] animate-pulse"
@@ -427,21 +448,33 @@ export default function FindMyFlavour() {
           {step === "landing" && (
             <motion.div
               initial={{ opacity: 0, y: 30 }}
-              animate={{ opacity: 1, y: 0 }}
+              animate={{
+                opacity: isTransitioning ? 0 : 1,
+                y: isTransitioning ? -40 : 0,
+                scale: isTransitioning ? 0.9 : 1,
+              }}
               transition={{ duration: 0.8, ease: "easeOut" }}
               className="text-center flex flex-col items-center relative"
             >
               
               {/* Premium Floating Circular Text Widget Behind Header */}
-              <div className="absolute -top-28 left-1/2 -translate-x-1/2 w-64 h-64 -z-10 opacity-60">
-                <CircularText text="DISCOVER • YOUR • PERFECT • FLAVOUR • VELLARI • PREMIUM • MAKHANA • " spinDuration={22} />
+              <div className="absolute -top-28 left-1/2 -translate-x-1/2 w-72 h-72 -z-10 opacity-60 pointer-events-auto">
+                <CircularText
+                  text="VELLARI • PREMIUM • MAKHANA • DISCOVER • YOUR • PERFECT • FLAVOUR • "
+                  spinDuration={18}
+                  onHover="speedUp"
+                  forceFast={isTransitioning}
+                />
               </div>
 
               {/* Glowing Orb AI scanner visual element */}
               <motion.div
-                animate={{ scale: [1, 1.08, 1] }}
-                transition={{ repeat: Infinity, duration: 3 }}
-                className="w-16 h-16 rounded-full bg-gradient-to-r from-v-gold/30 to-yellow-600/10 border border-v-gold/40 flex items-center justify-center shadow-[0_0_40px_rgba(212,184,122,0.25)] mb-10 mt-6"
+                animate={{
+                  scale: isTransitioning ? [1, 2.5, 0] : [1, 1.08, 1],
+                  rotate: isTransitioning ? 360 : 0,
+                }}
+                transition={{ duration: isTransitioning ? 1 : 3, ease: "easeInOut" }}
+                className="w-16 h-16 rounded-full bg-gradient-to-r from-v-gold/30 to-yellow-600/10 border border-v-gold/40 flex items-center justify-center shadow-[0_0_40px_rgba(212,184,122,0.25)] mb-12 mt-6"
               >
                 <Sparkles size={20} className="text-v-gold animate-pulse" />
               </motion.div>
@@ -450,14 +483,14 @@ export default function FindMyFlavour() {
                 AI Guidance System
               </span>
 
-              <h1 className="text-4xl sm:text-7xl font-black uppercase tracking-[4px] mb-8 leading-[1.15] max-w-2xl font-[family-name:var(--font-accent)]">
+              <h1 className="text-4xl sm:text-7xl font-black uppercase tracking-[4px] mb-8 leading-[1.25] max-w-2xl font-[family-name:var(--font-accent)]">
                 Find Your <br className="hidden sm:inline" />
                 <span className="text-transparent bg-clip-text bg-gradient-to-r from-white via-[#FFF6E3] to-v-gold">
                   Perfect Crunch.
                 </span>
               </h1>
               
-              <p className="text-white/60 text-base sm:text-xl font-light leading-[1.75] max-w-lg mb-16 tracking-[1px]">
+              <p className="text-white/60 text-base sm:text-xl font-light leading-[1.85] max-w-lg mb-16 tracking-[1.5px]">
                 Answer a few quick questions and let our AI match you with the premium Vellari Foxnut flavour that matches your vibe.
               </p>
 
@@ -465,18 +498,18 @@ export default function FindMyFlavour() {
               <div className="relative group">
                 <div className="absolute inset-0 bg-v-gold/20 rounded-full blur-xl opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
                 <motion.button
-                  whileHover={{ scale: 1.03, y: -2 }}
-                  whileTap={{ scale: 0.97 }}
+                  whileHover={{ scale: 1.04, y: -3 }}
+                  whileTap={{ scale: 0.96 }}
                   onClick={startJourney}
-                  className="relative inline-flex cursor-pointer items-center justify-center gap-3 rounded-full bg-v-gold px-12 py-6 font-[family-name:var(--font-accent)] text-xs font-black uppercase tracking-[3px] text-black shadow-2xl transition-all duration-300 border border-v-gold/30"
+                  className="relative inline-flex cursor-pointer items-center justify-center gap-3 rounded-full bg-v-gold px-14 py-6 font-[family-name:var(--font-accent)] text-xs font-black uppercase tracking-[3px] text-black shadow-2xl transition-all duration-300 border border-v-gold/30 hover:shadow-v-gold/25"
                 >
                   Start My Flavour Journey
-                  <ArrowRight size={14} className="transform group-hover:translate-x-1.5 transition-transform" />
+                  <ArrowRight size={14} className="transform group-hover:translate-x-2 transition-transform" />
                 </motion.button>
               </div>
 
               {/* Spaced Helper Text */}
-              <span className="text-white/40 text-[10px] uppercase tracking-[3px] font-accent mt-6 block">
+              <span className="text-white/40 text-[10px] uppercase tracking-[3px] font-accent mt-8 block">
                 Takes less than 30 seconds · No sign-up required
               </span>
             </motion.div>
