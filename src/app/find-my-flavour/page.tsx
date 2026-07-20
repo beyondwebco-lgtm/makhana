@@ -9,6 +9,42 @@ import { Camera, Upload, SkipForward, ArrowRight, RefreshCw, Sparkles, Check, X 
 import Image from "next/image";
 import { products } from "@/data/products";
 
+// ----------------------------------------------------
+// Circular Text Component (SVG textPath + Framer Motion)
+// ----------------------------------------------------
+interface CircularTextProps {
+  text?: string;
+  spinDuration?: number;
+  className?: string;
+}
+
+function CircularText({
+  text = "VELLARI • PREMIUM • MAKHANA • DISCOVER • YOUR • PERFECT • FLAVOUR • ",
+  spinDuration = 18,
+  className = "",
+}: CircularTextProps) {
+  return (
+    <motion.div
+      className={`pointer-events-none select-none ${className}`}
+      animate={{ rotate: 360 }}
+      transition={{ repeat: Infinity, duration: spinDuration, ease: "linear" }}
+    >
+      <svg viewBox="0 0 200 200" className="w-full h-full overflow-visible">
+        <path
+          id="textCirclePath"
+          d="M 100, 100 m -70, 0 a 70,70 0 1,1 140,0 a 70,70 0 1,1 -140,0"
+          fill="none"
+        />
+        <text className="text-[9.5px] uppercase font-[family-name:var(--font-accent)] font-bold tracking-[3px]" fill="rgba(212, 184, 122, 0.45)">
+          <textPath href="#textCirclePath" startOffset="0%">
+            {text}
+          </textPath>
+        </text>
+      </svg>
+    </motion.div>
+  );
+}
+
 // Configurable 5 Questions
 interface QuestionOption {
   label: string;
@@ -106,10 +142,25 @@ export default function FindMyFlavour() {
   const [recommendedSlug, setRecommendedSlug] = useState("green-flag");
   const [cameraError, setCameraError] = useState(false);
 
+  // Mouse Interaction coordinates
+  const [mousePos, setMousePos] = useState({ x: 0, y: 0 });
+
   // Camera Refs
   const videoRef = useRef<HTMLVideoElement>(null);
   const streamRef = useRef<MediaStream | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
+
+  // Monitor mouse movements for subtle parallax effects
+  useEffect(() => {
+    const handleMouseMove = (e: MouseEvent) => {
+      setMousePos({
+        x: (e.clientX / window.innerWidth - 0.5) * 30,
+        y: (e.clientY / window.innerHeight - 0.5) * 30,
+      });
+    };
+    window.addEventListener("mousemove", handleMouseMove);
+    return () => window.removeEventListener("mousemove", handleMouseMove);
+  }, []);
 
   // Stop camera stream helper
   const stopCamera = () => {
@@ -137,13 +188,13 @@ export default function FindMyFlavour() {
     }
   };
 
-  // Handle step transitions
+  // Handle step transitions with premium zoom transition delays
   const startJourney = () => {
     setIsModalOpen(true);
     setStep("camera");
     setTimeout(() => {
       startCamera();
-    }, 200);
+    }, 300);
   };
 
   // Capture Selfie Photo frame
@@ -156,7 +207,6 @@ export default function FindMyFlavour() {
     canvas.height = video.videoHeight || 480;
     const ctx = canvas.getContext("2d");
     if (ctx) {
-      // Flip horizontally for natural mirror selfie view
       ctx.translate(canvas.width, 0);
       ctx.scale(-1, 1);
       ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
@@ -204,7 +254,6 @@ export default function FindMyFlavour() {
     if (currentQuestionIndex < QUESTIONS.length - 1) {
       setCurrentQuestionIndex((prev) => prev + 1);
     } else {
-      // Done with questions, compute recommendation and run analysis animation
       computeRecommendation(newAnswers);
       setStep("analyzing");
     }
@@ -228,7 +277,6 @@ export default function FindMyFlavour() {
       });
     });
 
-    // Find highest scoring slug
     let bestSlug = "green-flag";
     let highestScore = -1;
     Object.keys(scores).forEach((slug) => {
@@ -286,10 +334,82 @@ export default function FindMyFlavour() {
       <Navbar />
       <div className="relative min-h-screen bg-[#050505] text-white overflow-hidden flex flex-col items-center justify-center pt-32 pb-24 px-6">
         
-        {/* Cinematic Background Gradients */}
-        <div className="absolute inset-0 pointer-events-none -z-10">
-          <div className="absolute top-1/4 left-1/4 w-[50vw] h-[50vw] rounded-full bg-yellow-500/5 blur-[150px] animate-pulse" />
-          <div className="absolute bottom-1/4 right-1/4 w-[45vw] h-[45vw] rounded-full bg-green-500/5 blur-[150px] animate-pulse" style={{ animationDelay: "2s" }} />
+        {/* 
+          ==================================================
+          PREMIUM BACKGROUND INTERACTIVE LAYERS
+          ==================================================
+        */}
+        <div className="absolute inset-0 pointer-events-none -z-10 overflow-hidden">
+          {/* Animated Branding Light Blobs */}
+          <motion.div
+            animate={{
+              x: [mousePos.x * 0.4, mousePos.x * -0.4, mousePos.x * 0.4],
+              y: [mousePos.y * 0.4, mousePos.y * -0.4, mousePos.y * 0.4],
+            }}
+            transition={{ type: "spring", stiffness: 40, damping: 20 }}
+            className="absolute top-1/4 left-1/4 w-[60vw] h-[60vw] rounded-full bg-gradient-to-r from-v-gold/5 to-yellow-600/5 blur-[160px] animate-pulse"
+          />
+          <motion.div
+            animate={{
+              x: [mousePos.x * -0.6, mousePos.x * 0.6, mousePos.x * -0.6],
+              y: [mousePos.y * -0.6, mousePos.y * 0.6, mousePos.y * -0.6],
+            }}
+            transition={{ type: "spring", stiffness: 45, damping: 25 }}
+            className="absolute bottom-1/4 right-1/4 w-[50vw] h-[50vw] rounded-full bg-gradient-to-r from-green-500/5 to-emerald-600/5 blur-[150px] animate-pulse"
+            style={{ animationDelay: "2.5s" }}
+          />
+
+          {/* Floating Premium Ingredients & Mascot Stickers */}
+          <motion.div
+            animate={{
+              x: mousePos.x * -0.8,
+              y: mousePos.y * -0.8,
+            }}
+            className="absolute top-28 left-[15%] text-4xl opacity-30 select-none hidden lg:block"
+          >
+            🌿
+          </motion.div>
+          <motion.div
+            animate={{
+              x: mousePos.x * 1.2,
+              y: mousePos.y * 1.2,
+            }}
+            className="absolute top-48 right-[18%] text-4xl opacity-20 select-none hidden lg:block"
+          >
+            🧀
+          </motion.div>
+          <motion.div
+            animate={{
+              x: mousePos.x * -0.5,
+              y: mousePos.y * 0.5,
+            }}
+            className="absolute bottom-36 left-[12%] text-3xl opacity-25 select-none hidden lg:block"
+          >
+            🌶️
+          </motion.div>
+          <motion.div
+            animate={{
+              x: mousePos.x * 0.9,
+              y: mousePos.y * -0.9,
+            }}
+            className="absolute bottom-28 right-[15%] text-4xl opacity-25 select-none hidden lg:block"
+          >
+            🍅
+          </motion.div>
+
+          {/* Floating Makhanas */}
+          {Array.from({ length: 8 }).map((_, i) => (
+            <motion.span
+              key={i}
+              className="absolute block h-2 w-2 rounded-full bg-v-gold/15 animate-ping"
+              style={{
+                top: `${15 + (i * 12) % 75}%`,
+                left: `${8 + (i * 19) % 85}%`,
+                animationDelay: `${i * 0.5}s`,
+                animationDuration: `${4 + (i % 3)}s`,
+              }}
+            />
+          ))}
         </div>
 
         {/* Ambient Film Grain Overlay */}
@@ -301,39 +421,64 @@ export default function FindMyFlavour() {
           }}
         />
 
-        <div className="w-full max-w-2xl relative z-10 flex flex-col items-center justify-center">
+        <div className="w-full max-w-3xl relative z-10 flex flex-col items-center justify-center">
           
           {/* STATIC LANDING PAGE HERO */}
           {step === "landing" && (
             <motion.div
-              initial={{ opacity: 0, y: 20 }}
+              initial={{ opacity: 0, y: 30 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6 }}
-              className="text-center flex flex-col items-center"
+              transition={{ duration: 0.8, ease: "easeOut" }}
+              className="text-center flex flex-col items-center relative"
             >
-              <span className="inline-flex items-center gap-2 py-1.5 px-5 rounded-full bg-v-gold/10 text-v-gold text-xs uppercase tracking-[4px] font-accent font-bold mb-6 border border-v-gold/20 shadow-[0_0_20px_rgba(212,184,122,0.1)]">
-                <Sparkles size={14} />
-                Flavour Discovery Engine
+              
+              {/* Premium Floating Circular Text Widget Behind Header */}
+              <div className="absolute -top-28 left-1/2 -translate-x-1/2 w-64 h-64 -z-10 opacity-60">
+                <CircularText text="DISCOVER • YOUR • PERFECT • FLAVOUR • VELLARI • PREMIUM • MAKHANA • " spinDuration={22} />
+              </div>
+
+              {/* Glowing Orb AI scanner visual element */}
+              <motion.div
+                animate={{ scale: [1, 1.08, 1] }}
+                transition={{ repeat: Infinity, duration: 3 }}
+                className="w-16 h-16 rounded-full bg-gradient-to-r from-v-gold/30 to-yellow-600/10 border border-v-gold/40 flex items-center justify-center shadow-[0_0_40px_rgba(212,184,122,0.25)] mb-10 mt-6"
+              >
+                <Sparkles size={20} className="text-v-gold animate-pulse" />
+              </motion.div>
+
+              <span className="inline-flex items-center gap-2 py-1.5 px-5 rounded-full bg-v-gold/10 text-v-gold text-[10px] sm:text-xs uppercase tracking-[5px] font-accent font-bold mb-8 border border-v-gold/20 shadow-[0_0_20px_rgba(212,184,122,0.1)]">
+                AI Guidance System
               </span>
-              <h1 className="text-4xl sm:text-6xl font-black uppercase tracking-tight mb-6 leading-none">
-                Find Your <br />
-                <span className="text-transparent bg-clip-text bg-gradient-to-r from-white via-[#FFF0D4] to-v-gold">
+
+              <h1 className="text-4xl sm:text-7xl font-black uppercase tracking-[4px] mb-8 leading-[1.15] max-w-2xl font-[family-name:var(--font-accent)]">
+                Find Your <br className="hidden sm:inline" />
+                <span className="text-transparent bg-clip-text bg-gradient-to-r from-white via-[#FFF6E3] to-v-gold">
                   Perfect Crunch.
                 </span>
               </h1>
-              <p className="text-white/60 text-base sm:text-lg font-light leading-relaxed max-w-md mb-12">
+              
+              <p className="text-white/60 text-base sm:text-xl font-light leading-[1.75] max-w-lg mb-16 tracking-[1px]">
                 Answer a few quick questions and let our AI match you with the premium Vellari Foxnut flavour that matches your vibe.
               </p>
 
-              <motion.button
-                whileHover={{ scale: 1.03 }}
-                whileTap={{ scale: 0.97 }}
-                onClick={startJourney}
-                className="inline-flex cursor-pointer items-center justify-center gap-2 rounded-full bg-v-gold px-10 py-5 font-[family-name:var(--font-accent)] text-xs font-bold uppercase tracking-widest text-black shadow-lg shadow-v-gold/10 group"
-              >
-                Start My Flavour Journey
-                <ArrowRight size={14} className="transform group-hover:translate-x-1 transition-transform" />
-              </motion.button>
+              {/* Large Premium Wider/Taller CTA Button with Ring Light effect */}
+              <div className="relative group">
+                <div className="absolute inset-0 bg-v-gold/20 rounded-full blur-xl opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+                <motion.button
+                  whileHover={{ scale: 1.03, y: -2 }}
+                  whileTap={{ scale: 0.97 }}
+                  onClick={startJourney}
+                  className="relative inline-flex cursor-pointer items-center justify-center gap-3 rounded-full bg-v-gold px-12 py-6 font-[family-name:var(--font-accent)] text-xs font-black uppercase tracking-[3px] text-black shadow-2xl transition-all duration-300 border border-v-gold/30"
+                >
+                  Start My Flavour Journey
+                  <ArrowRight size={14} className="transform group-hover:translate-x-1.5 transition-transform" />
+                </motion.button>
+              </div>
+
+              {/* Spaced Helper Text */}
+              <span className="text-white/40 text-[10px] uppercase tracking-[3px] font-accent mt-6 block">
+                Takes less than 30 seconds · No sign-up required
+              </span>
             </motion.div>
           )}
 
