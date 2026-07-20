@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useEffect, useRef } from "react";
-import { Renderer, Geometry, Program, Mesh } from "ogl";
+import { Renderer, Geometry, Program, Mesh, Transform } from "ogl";
 
 interface LightRaysProps {
   raysOrigin?: "top-center" | "top-left" | "top-right" | "center" | "left" | "right";
@@ -171,7 +171,9 @@ export default function LightRays({
       },
     });
 
+    const scene = new Transform();
     const mesh = new Mesh(gl, { geometry, program });
+    mesh.setParent(scene);
 
     // Handle mouse move tracking
     let targetMouse = [0, 0];
@@ -227,7 +229,7 @@ export default function LightRays({
       const freshRgb = hexToRgb(raysColor);
       program.uniforms.uColor.value = freshRgb;
       
-      renderer.render({ scene: mesh });
+      renderer.render({ scene });
       animationFrameId = requestAnimationFrame(update);
     };
 

@@ -51,7 +51,7 @@ function CircularText({
           d="M 100, 100 m -70, 0 a 70,70 0 1,1 140,0 a 70,70 0 1,1 -140,0"
           fill="none"
         />
-        <text className="text-[9.5px] uppercase font-[family-name:var(--font-accent)] font-bold tracking-[3px]" fill="rgba(212, 184, 122, 0.45)">
+        <text className="text-[9.5px] uppercase font-[family-name:var(--font-accent)] font-bold tracking-[4px]" fill="rgba(212, 184, 122, 0.45)">
           <textPath href="#textCirclePath" startOffset="0%">
             {text}
           </textPath>
@@ -146,7 +146,6 @@ const FLAVOUR_SCORES: Record<string, Record<string, number>> = {
   "soulmate": { social: 4, different: 3, purple: 4, happy: 2, office: 2 },
 };
 
-// Flavour-specific ray colors matching user guidelines
 const THEME_COLORS: Record<string, string> = {
   "default": "#D4AF37",      // Warm Champagne Gold
   "love-bite": "#F2C94C",    // Golden Yellow
@@ -170,18 +169,13 @@ export default function FindMyFlavour() {
   const [cameraError, setCameraError] = useState(false);
   const [flashActive, setFlashActive] = useState(false);
 
-  // Dynamic ray color matching the recommended flavor, default to champagne gold
   const [rayColor, setRayColor] = useState(THEME_COLORS.default);
-
-  // Mouse coordinates
   const [mousePos, setMousePos] = useState({ x: 0, y: 0 });
 
-  // Camera Refs
   const videoRef = useRef<HTMLVideoElement>(null);
   const streamRef = useRef<MediaStream | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
-  // Smooth background color shifting based on results
   useEffect(() => {
     if (step === "result" || step === "analyzing") {
       setRayColor(THEME_COLORS[recommendedSlug] || THEME_COLORS.default);
@@ -190,7 +184,6 @@ export default function FindMyFlavour() {
     }
   }, [step, recommendedSlug]);
 
-  // Monitor mouse movements for subtle parallax effects
   useEffect(() => {
     const handleMouseMove = (e: MouseEvent) => {
       setMousePos({
@@ -202,7 +195,6 @@ export default function FindMyFlavour() {
     return () => window.removeEventListener("mousemove", handleMouseMove);
   }, []);
 
-  // Stop camera stream helper
   const stopCamera = () => {
     if (streamRef.current) {
       streamRef.current.getTracks().forEach((track) => track.stop());
@@ -210,7 +202,6 @@ export default function FindMyFlavour() {
     }
   };
 
-  // Start camera stream
   const startCamera = async () => {
     setCameraError(false);
     try {
@@ -228,7 +219,6 @@ export default function FindMyFlavour() {
     }
   };
 
-  // Handle step transitions
   const startJourney = () => {
     setIsTransitioning(true);
     setTimeout(() => {
@@ -241,7 +231,6 @@ export default function FindMyFlavour() {
     }, 1100);
   };
 
-  // Capture Selfie Photo frame with flash latency
   const capturePhoto = () => {
     const video = videoRef.current;
     if (!video) return;
@@ -265,7 +254,6 @@ export default function FindMyFlavour() {
     }, 150);
   };
 
-  // Handle local file upload fallback
   const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
@@ -279,7 +267,6 @@ export default function FindMyFlavour() {
     }
   };
 
-  // Retake photo
   const retakePhoto = () => {
     setCapturedImage(null);
     setStep("camera");
@@ -288,13 +275,11 @@ export default function FindMyFlavour() {
     }, 100);
   };
 
-  // Skip photo selection
   const skipPhoto = () => {
     stopCamera();
     setStep("questions");
   };
 
-  // Select Option answer
   const selectOption = (val: string) => {
     const newAnswers = [...answers, val];
     setAnswers(newAnswers);
@@ -307,7 +292,6 @@ export default function FindMyFlavour() {
     }
   };
 
-  // Score mappings and select flavor slug
   const computeRecommendation = (finalAnswers: string[]) => {
     const scores: Record<string, number> = {
       "love-bite": 0,
@@ -337,7 +321,6 @@ export default function FindMyFlavour() {
     setRecommendedSlug(bestSlug);
   };
 
-  // AI loading sequence animation
   useEffect(() => {
     if (step !== "analyzing") return;
 
@@ -370,7 +353,6 @@ export default function FindMyFlavour() {
     return () => clearInterval(intervalId);
   }, [step]);
 
-  // Cleanup camera streams on unmount
   useEffect(() => {
     return () => stopCamera();
   }, []);
@@ -395,11 +377,7 @@ export default function FindMyFlavour() {
           )}
         </AnimatePresence>
 
-        {/* 
-          ==================================================
-          GLOBAL BACKGROUND: REACT BITS LIGHTRAYS
-          ==================================================
-        */}
+        {/* GLOBAL BACKGROUND: REACT BITS LIGHTRAYS */}
         <div className="absolute inset-0 pointer-events-none -z-20">
           <LightRays
             raysOrigin="top-center"
@@ -417,7 +395,6 @@ export default function FindMyFlavour() {
           />
         </div>
 
-        {/* Above LightRays 20% transparent black overlay + soft vignette */}
         <div className="absolute inset-0 bg-black/20 pointer-events-none -z-10 bg-[radial-gradient(circle_at_center,rgba(0,0,0,0)_30%,rgba(5,5,5,0.85)_100%)]" />
 
         {/* Floating Premium Ingredients & Mascot Stickers */}
@@ -506,11 +483,11 @@ export default function FindMyFlavour() {
                 <Sparkles size={20} className="text-v-gold animate-pulse" />
               </motion.div>
 
-              <span className="inline-flex items-center gap-2 py-1.5 px-5 rounded-full bg-v-gold/10 text-v-gold text-[10px] sm:text-xs uppercase tracking-[5px] font-accent font-bold mb-8 border border-v-gold/20 shadow-[0_0_20px_rgba(212,184,122,0.1)]">
+              <span className="inline-flex items-center gap-2 py-1.5 px-5 rounded-full bg-v-gold/10 text-v-gold text-[10px] sm:text-xs uppercase tracking-[6px] font-accent font-bold mb-8 border border-v-gold/20 shadow-[0_0_20px_rgba(212,184,122,0.1)]">
                 AI Guidance System
               </span>
 
-              <h1 className="text-5xl sm:text-7xl font-black uppercase tracking-[4px] mb-8 leading-[1.25] max-w-2xl font-[family-name:var(--font-accent)]">
+              <h1 className="text-5xl sm:text-7xl font-black uppercase tracking-[8px] mb-8 leading-[1.25] max-w-2xl font-[family-name:var(--font-accent)] text-white">
                 Find Your <br className="hidden sm:inline" />
                 <span className="text-transparent bg-clip-text bg-gradient-to-r from-white via-[#FFF6E3] to-v-gold">
                   Perfect Crunch.
@@ -616,10 +593,10 @@ export default function FindMyFlavour() {
                           <span className="text-v-gold text-[11px] font-accent font-black uppercase tracking-[4px] mb-4">
                             Step 01 / Onboarding
                           </span>
-                          <h2 className="text-5xl lg:text-6xl font-black uppercase tracking-tight mb-6 leading-tight font-accent text-white">
+                          <h2 className="text-5xl lg:text-6xl font-black uppercase tracking-[6px] mb-6 leading-tight font-accent text-white">
                             Snap Your Selfie
                           </h2>
-                          <p className="text-white/60 text-base leading-relaxed mb-8 font-light">
+                          <p className="text-white/60 text-base leading-relaxed mb-8 font-light tracking-[1px]">
                             Take a quick selfie to personalise your flavour journey. This visual identity will customize your analysis report.
                           </p>
 
@@ -648,24 +625,24 @@ export default function FindMyFlavour() {
                             </div>
                           </div>
 
-                          {/* Action controls */}
-                          <div className="flex flex-col gap-3">
+                          {/* Action controls without overlapping */}
+                          <div className="flex flex-col gap-4">
                             {!cameraError && (
                               <motion.button
                                 whileHover={{ scale: 1.02 }}
                                 whileTap={{ scale: 0.98 }}
                                 onClick={capturePhoto}
-                                className="w-full inline-flex cursor-pointer items-center justify-center gap-2 rounded-full bg-v-gold text-black py-4.5 font-[family-name:var(--font-accent)] text-xs font-black uppercase tracking-widest shadow-lg shadow-v-gold/15"
+                                className="w-full inline-flex cursor-pointer items-center justify-center gap-2 rounded-full bg-v-gold text-black py-4.5 font-[family-name:var(--font-accent)] text-xs font-black uppercase tracking-[3px] shadow-lg shadow-v-gold/15"
                               >
                                 <Camera size={14} />
                                 Capture Selfie
                               </motion.button>
                             )}
 
-                            <div className="grid grid-cols-2 gap-3">
+                            <div className="grid grid-cols-2 gap-4">
                               <button
                                 onClick={() => fileInputRef.current?.click()}
-                                className="inline-flex cursor-pointer items-center justify-center gap-2 rounded-full bg-white/5 border border-white/10 py-4 font-[family-name:var(--font-accent)] text-xs font-bold uppercase tracking-wider hover:bg-white/10 transition text-white/90"
+                                className="inline-flex cursor-pointer items-center justify-center gap-2 rounded-full bg-white/5 border border-white/10 py-4.5 font-[family-name:var(--font-accent)] text-xs font-bold uppercase tracking-[2px] hover:bg-white/10 transition text-white/90"
                               >
                                 <Upload size={14} />
                                 Upload Photo
@@ -673,7 +650,7 @@ export default function FindMyFlavour() {
 
                               <button
                                 onClick={skipPhoto}
-                                className="inline-flex cursor-pointer items-center justify-center gap-2 rounded-full bg-white/5 border border-white/10 py-4 font-[family-name:var(--font-accent)] text-xs font-bold uppercase tracking-wider hover:bg-white/10 transition text-white/90"
+                                className="inline-flex cursor-pointer items-center justify-center gap-2 rounded-full bg-white/5 border border-white/10 py-4.5 font-[family-name:var(--font-accent)] text-xs font-bold uppercase tracking-[2px] hover:bg-white/10 transition text-white/90"
                               >
                                 <SkipForward size={14} />
                                 Skip
@@ -700,14 +677,14 @@ export default function FindMyFlavour() {
                         initial={{ opacity: 0, scale: 0.95 }}
                         animate={{ opacity: 1, scale: 1 }}
                         exit={{ opacity: 0, scale: 0.95 }}
-                        className="w-full h-full flex flex-col items-center justify-center text-center p-6"
+                        className="w-full h-full flex flex-col items-center justify-center text-center p-6 gap-6"
                       >
-                        <h2 className="text-4xl font-black uppercase tracking-tight mb-4 text-white font-body">Your Photo</h2>
-                        <p className="text-white/50 text-base max-w-sm mb-10 font-light">
+                        <h2 className="text-4xl font-black uppercase tracking-[6px] text-white font-body">Your Photo</h2>
+                        <p className="text-white/50 text-base max-w-sm font-light tracking-[1px]">
                           Looking good! Let's continue to the questions.
                         </p>
 
-                        <div className="relative w-72 h-72 rounded-full overflow-hidden border-2 border-v-gold mb-10 flex items-center justify-center shadow-2xl">
+                        <div className="relative w-72 h-72 rounded-full overflow-hidden border-2 border-v-gold flex items-center justify-center shadow-2xl">
                           {capturedImage && (
                             <img
                               src={capturedImage}
@@ -717,12 +694,12 @@ export default function FindMyFlavour() {
                           )}
                         </div>
 
-                        <div className="flex gap-4">
+                        <div className="flex gap-4 mt-4">
                           <motion.button
                             whileHover={{ scale: 1.02 }}
                             whileTap={{ scale: 0.98 }}
                             onClick={retakePhoto}
-                            className="inline-flex cursor-pointer items-center justify-center gap-2 rounded-full bg-white/5 border border-white/10 px-10 py-4 font-[family-name:var(--font-accent)] text-xs font-bold uppercase tracking-wider text-white"
+                            className="inline-flex cursor-pointer items-center justify-center gap-2 rounded-full bg-white/5 border border-white/10 px-10 py-4.5 font-[family-name:var(--font-accent)] text-xs font-bold uppercase tracking-[2px] text-white"
                           >
                             Retake
                           </motion.button>
@@ -731,7 +708,7 @@ export default function FindMyFlavour() {
                             whileHover={{ scale: 1.02 }}
                             whileTap={{ scale: 0.98 }}
                             onClick={() => setStep("questions")}
-                            className="inline-flex cursor-pointer items-center justify-center gap-2 rounded-full bg-v-gold text-black px-10 py-4 font-[family-name:var(--font-accent)] text-xs font-bold uppercase tracking-wider"
+                            className="inline-flex cursor-pointer items-center justify-center gap-2 rounded-full bg-v-gold text-black px-10 py-4.5 font-[family-name:var(--font-accent)] text-xs font-black uppercase tracking-[2px]"
                           >
                             Continue
                           </motion.button>
@@ -739,7 +716,7 @@ export default function FindMyFlavour() {
                       </motion.div>
                     )}
 
-                    {/* QUESTIONS STEP: SLIDE TRANSITIONS & GENERATIVE BREATHING ROOM */}
+                    {/* QUESTIONS STEP: CENTERED AND ALIGNED NICELY */}
                     {step === "questions" && (
                       <motion.div
                         key={`q-${currentQuestionIndex}`}
@@ -747,10 +724,10 @@ export default function FindMyFlavour() {
                         animate={{ opacity: 1, x: 0, filter: "blur(0px)" }}
                         exit={{ opacity: 0, x: -100, filter: "blur(4px)" }}
                         transition={{ duration: 0.5, ease: "easeInOut" }}
-                        className="w-full h-full flex flex-col justify-between"
+                        className="w-full h-full flex flex-col justify-start"
                       >
                         {/* Header metadata info */}
-                        <div className="flex justify-between items-center mb-10">
+                        <div className="flex justify-between items-center mb-8 border-b border-white/5 pb-4">
                           <span className="text-v-gold text-xs uppercase tracking-[4px] font-accent font-black">
                             Question {QUESTIONS[currentQuestionIndex].id} of {QUESTIONS.length}
                           </span>
@@ -766,15 +743,15 @@ export default function FindMyFlavour() {
                           </div>
                         </div>
 
-                        {/* Generous Question title spacing */}
-                        <div className="max-w-2xl mb-12">
-                          <h3 className="text-4xl sm:text-5xl font-black uppercase tracking-tight text-white leading-tight font-accent">
+                        {/* Centered spacious Question title */}
+                        <div className="max-w-3xl mb-8 mt-4 pl-2">
+                          <h3 className="text-4xl sm:text-5xl font-black uppercase tracking-[4px] text-white leading-tight font-accent">
                             {QUESTIONS[currentQuestionIndex].title}
                           </h3>
                         </div>
 
                         {/* Large Glassmorphism answer cards */}
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 max-h-[380px] overflow-y-auto pr-1 mb-8">
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 max-h-[380px] overflow-y-auto pr-1 mb-8 pl-2">
                           {QUESTIONS[currentQuestionIndex].options.map((opt) => (
                             <motion.button
                               key={opt.value}
@@ -785,7 +762,7 @@ export default function FindMyFlavour() {
                             >
                               <div className="flex items-center gap-6">
                                 <span className="text-3xl">{opt.icon}</span>
-                                <span className="text-lg font-medium text-white/80 group-hover:text-white transition tracking-wide">{opt.label}</span>
+                                <span className="text-lg font-medium text-white/80 group-hover:text-white transition tracking-[1.5px]">{opt.label}</span>
                               </div>
                               <div className="h-7 w-7 rounded-full border border-white/10 flex items-center justify-center group-hover:border-v-gold/50 group-hover:bg-v-gold/15 transition">
                                 <Check size={14} className="text-v-gold opacity-0 group-hover:opacity-100 transition" />
@@ -803,10 +780,10 @@ export default function FindMyFlavour() {
                         initial={{ opacity: 0 }}
                         animate={{ opacity: 1 }}
                         exit={{ opacity: 0 }}
-                        className="w-full h-full flex flex-col items-center justify-center text-center"
+                        className="w-full h-full flex flex-col items-center justify-center text-center gap-6"
                       >
                         {capturedImage ? (
-                          <div className="relative mb-10 flex flex-col items-center">
+                          <div className="relative mb-6 flex flex-col items-center">
                             <div className="w-32 h-32 rounded-full overflow-hidden border-2 border-v-gold shadow-2xl">
                               <img
                                 src={capturedImage}
@@ -822,20 +799,20 @@ export default function FindMyFlavour() {
                           <motion.div
                             animate={{ rotate: 360 }}
                             transition={{ repeat: Infinity, duration: 2, ease: "linear" }}
-                            className="text-v-gold mb-10"
+                            className="text-v-gold mb-6"
                           >
                             <RefreshCw size={64} strokeWidth={1} />
                           </motion.div>
                         )}
 
-                        <h3 className="text-3xl font-black uppercase tracking-tight mb-4 text-white font-accent">
+                        <h3 className="text-3xl font-black uppercase tracking-[6px] text-white font-accent">
                           Analysing Your Flavour...
                         </h3>
-                        <p className="text-white/50 text-base font-light mb-10 h-6">
+                        <p className="text-white/50 text-base font-light h-6 tracking-[1px]">
                           {analysisText}
                         </p>
 
-                        <div className="w-full max-w-sm h-2 bg-white/5 rounded-full overflow-hidden border border-white/5">
+                        <div className="w-full max-w-sm h-2 bg-white/5 rounded-full overflow-hidden border border-white/5 mt-4">
                           <motion.div
                             className="h-full bg-v-gold"
                             style={{ width: `${analysisProgress}%` }}
@@ -844,7 +821,7 @@ export default function FindMyFlavour() {
                       </motion.div>
                     )}
 
-                    {/* RESULTS STEP: FULL SCREEN LUXURY LAYOUT */}
+                    {/* RESULTS STEP: STYLISH FULL SCREEN METERS */}
                     {step === "result" && (
                       <motion.div
                         key="result"
@@ -881,29 +858,29 @@ export default function FindMyFlavour() {
                           )}
                         </div>
 
-                        {/* RIGHT COLUMN: DETAIL REPORT & COMPATIBILITY METERS */}
+                        {/* RIGHT COLUMN: COMPACTION FIX FOR BUTTON LAYOUTS */}
                         <div className="lg:col-span-6 flex flex-col justify-center text-left">
                           <span className="text-v-gold text-[11px] font-accent font-black uppercase tracking-[4px] mb-4">
                             Your Perfect Match
                           </span>
-                          <h2 className="text-5xl lg:text-6xl font-black uppercase tracking-tight mb-6 font-accent leading-tight text-white">
+                          <h2 className="text-5xl lg:text-6xl font-black uppercase tracking-[6px] mb-6 font-accent leading-tight text-white">
                             {recommendedProduct.name}
                           </h2>
 
-                          <p className="text-white/70 text-base leading-relaxed mb-8 font-light">
+                          <p className="text-white/70 text-base leading-relaxed mb-8 font-light tracking-[1px]">
                             You seem calm, refreshing, and balanced today. Based on your mood and flavor profiles, we think <strong className="text-white font-bold">{recommendedProduct.name}</strong> is the perfect fit to elevate your crunch game.
                           </p>
 
                           {/* Match metrics with premium meters */}
                           <div className="bg-white/5 border border-white/5 rounded-2xl p-6 space-y-6 mb-8">
                             <div className="flex justify-between items-center text-xs">
-                              <span className="text-white/50 uppercase tracking-widest text-[10px]">Vellari Core Fit</span>
-                              <span className="font-accent font-black text-v-gold text-sm">95% MATCH</span>
+                              <span className="text-white/50 uppercase tracking-widest text-[10px] tracking-[2px]">Vellari Core Fit</span>
+                              <span className="font-accent font-black text-v-gold text-sm tracking-[2px]">95% MATCH</span>
                             </div>
 
                             {/* Taste Meter */}
                             <div className="space-y-2 border-t border-white/5 pt-4">
-                              <div className="flex justify-between text-[10px] text-white/40 uppercase tracking-wider">
+                              <div className="flex justify-between text-[10px] text-white/40 uppercase tracking-wider tracking-[1px]">
                                 <span>Taste Intensity (Crunchiness)</span>
                                 <span className="text-white">90%</span>
                               </div>
@@ -914,7 +891,7 @@ export default function FindMyFlavour() {
 
                             {/* Mood Meter */}
                             <div className="space-y-2">
-                              <div className="flex justify-between text-[10px] text-white/40 uppercase tracking-wider">
+                              <div className="flex justify-between text-[10px] text-white/40 uppercase tracking-wider tracking-[1px]">
                                 <span>Mood Temperament (Aroma Match)</span>
                                 <span className="text-white">95%</span>
                               </div>
@@ -924,14 +901,14 @@ export default function FindMyFlavour() {
                             </div>
                           </div>
 
-                          {/* CTA Actions */}
-                          <div className="flex flex-col sm:flex-row gap-3 w-full">
-                            <Link href={`/flavours/${recommendedProduct.slug}`} className="flex-1">
+                          {/* Fix overlapping buttons - clean horizontal layout with gap */}
+                          <div className="flex flex-col sm:flex-row gap-4 w-full mt-4 justify-start">
+                            <Link href={`/flavours/${recommendedProduct.slug}`} className="w-full sm:w-auto">
                               <motion.span
                                 whileHover={{ scale: 1.02 }}
                                 whileTap={{ scale: 0.98 }}
                                 onClick={() => setIsModalOpen(false)}
-                                className="w-full inline-flex cursor-pointer items-center justify-center gap-2 rounded-full bg-v-gold text-black py-4.5 font-[family-name:var(--font-accent)] text-xs font-black uppercase tracking-widest shadow-lg shadow-v-gold/15"
+                                className="w-full sm:w-auto inline-flex cursor-pointer items-center justify-center gap-2 rounded-full bg-v-gold text-black px-8 py-4.5 font-[family-name:var(--font-accent)] text-xs font-black uppercase tracking-widest shadow-lg shadow-v-gold/15"
                               >
                                 Explore This Flavour
                                 <ArrowRight size={14} />
@@ -948,7 +925,7 @@ export default function FindMyFlavour() {
                                 setStep("camera");
                                 setTimeout(() => startCamera(), 100);
                               }}
-                              className="inline-flex cursor-pointer items-center justify-center gap-2 rounded-full bg-white/5 border border-white/10 px-8 py-4.5 font-[family-name:var(--font-accent)] text-xs font-bold uppercase tracking-widest text-white hover:bg-white/10 transition"
+                              className="w-full sm:w-auto inline-flex cursor-pointer items-center justify-center gap-2 rounded-full bg-white/5 border border-white/10 px-8 py-4.5 font-[family-name:var(--font-accent)] text-xs font-bold uppercase tracking-widest text-white hover:bg-white/10 transition"
                             >
                               Try Again
                             </motion.button>
