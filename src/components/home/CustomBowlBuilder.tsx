@@ -3,56 +3,121 @@
 import { motion } from "framer-motion";
 import Image from "next/image";
 import Link from "next/link";
-import { ArrowRight, Sparkles } from "lucide-react";
+import { ArrowRight, Sparkles, ShoppingBag } from "lucide-react";
+import { useCart } from "@/context/CartContext";
 
 const PREMIUM_COMBOS = [
   {
-    id: "red-flag",
-    title: "Red Flag Bowl",
-    description: "Spicy + Cheese + Peri Peri. Perfect for bold snack lovers.",
-    image: "/assets/Bowl.jpeg", // Placeholder as requested
+    id: "bold-hearts",
+    title: "Bold Hearts",
+    description: "Red Flag + Green Flag + Blush. Bold flavors, real connections.",
+    image: "/assets/combos/bold-heart.png",
+    flavors: "Peri Peri • Mint • Tangy Tomato",
     badge: "POPULAR",
     badgeColor: "from-red-600 to-red-400",
-    protein: "18g",
-    price: "₹299",
+    count: "3 Flavors",
+    price: "₹449",
     delay: 0.1
   },
   {
-    id: "green-flag",
-    title: "Green Flag Bowl",
-    description: "Mint + Himalayan Salt. Fresh & Healthy.",
-    image: "/assets/Bowl.jpeg", // Placeholder
-    badge: "CHEF'S PICK",
-    badgeColor: "from-green-600 to-green-400",
-    protein: "15g",
-    price: "₹249",
+    id: "mixed-signals",
+    title: "Mixed Signals",
+    description: "Red Flag + Green Flag. Two flavors, total chemistry!",
+    image: "/assets/combos/mixed-signals.png",
+    flavors: "Peri Peri • Mint",
+    badge: "TRENDING",
+    badgeColor: "from-emerald-600 to-emerald-400",
+    count: "2 Flavors",
+    price: "₹349",
+    delay: 0.15
+  },
+  {
+    id: "spice-romance",
+    title: "Spice \u0026 Romance",
+    description: "Red Flag + Blush + Love Bite. Bold flavors, perfect together.",
+    image: "/assets/combos/spicy-romance.png",
+    flavors: "Peri Peri • Tangy Tomato • Cheese",
+    badge: "HOT",
+    badgeColor: "from-orange-600 to-orange-400",
+    count: "3 Flavors",
+    price: "₹449",
     delay: 0.2
   },
   {
-    id: "fire-bowl",
-    title: "Fire Bowl",
-    description: "Peri Peri + Tangy Tomato. Hot Favourite.",
-    image: "/assets/Bowl.jpeg", // Placeholder
-    badge: "LIMITED",
-    badgeColor: "from-orange-600 to-orange-400",
-    protein: "14g",
-    price: "₹279",
+    id: "butterflies",
+    title: "Butterflies",
+    description: "Crush Me + Blush. The first look, the first smile, the first blush.",
+    image: "/assets/combos/butterflies.png",
+    flavors: "Classic Salted • Tangy Tomato",
+    badge: "SWEET",
+    badgeColor: "from-pink-500 to-pink-400",
+    count: "2 Flavors",
+    price: "₹349",
+    delay: 0.25
+  },
+  {
+    id: "date-night",
+    title: "The Date Night",
+    description: "Crush Me + Red Flag + Love Bite. Perfect company, perfect flavors.",
+    image: "/assets/combos/date-night.png",
+    flavors: "Classic Salted • Peri Peri • Cheese",
+    badge: "CHEF\u0027S PICK",
+    badgeColor: "from-rose-600 to-rose-400",
+    count: "3 Flavors",
+    price: "₹449",
     delay: 0.3
   },
   {
-    id: "royal-mix",
-    title: "Royal Mix Bowl",
-    description: "All Flavours Together. The ultimate tasting experience.",
-    image: "/assets/Bowl.jpeg", // Placeholder
+    id: "forever-yours",
+    title: "Forever Yours",
+    description: "Soulmate + Love Bite. Two flavors, one forever.",
+    image: "/assets/combos/forever-yours.png",
+    flavors: "Cream \u0026 Onion • Cheese",
+    badge: "ROMANTIC",
+    badgeColor: "from-purple-600 to-purple-400",
+    count: "2 Flavors",
+    price: "₹349",
+    delay: 0.35
+  },
+  {
+    id: "first-crush",
+    title: "First Crush",
+    description: "Green Flag + Crush Me + Soulmate. The perfect beginning.",
+    image: "/assets/combos/first-crush.png",
+    flavors: "Mint • Classic Salted • Cream \u0026 Onion",
+    badge: "NEW",
+    badgeColor: "from-fuchsia-600 to-fuchsia-400",
+    count: "3 Flavors",
+    price: "₹449",
+    delay: 0.4
+  },
+  {
+    id: "match-made",
+    title: "Match Made",
+    description: "Crush Me + Soulmate + Love Bite. Perfect flavors, perfect together.",
+    image: "/assets/combos/match-made.png",
+    flavors: "Classic Salted • Cream \u0026 Onion • Cheese",
     badge: "BEST SELLER",
     badgeColor: "from-[var(--v-gold)] to-yellow-600",
-    protein: "30g+",
-    price: "₹499",
-    delay: 0.4
+    count: "3 Flavors",
+    price: "₹449",
+    delay: 0.45
   }
 ];
 
 export default function CustomBowlBuilder() {
+  const { addCustomToCart } = useCart();
+
+  const handleAddCombo = (combo: typeof PREMIUM_COMBOS[0]) => {
+    addCustomToCart({
+      slug: combo.id,
+      name: combo.title,
+      price: parseInt(combo.price.replace("₹", "")),
+      image: combo.image,
+      flavor: combo.flavors,
+    });
+  };
+
   return (
     <section id="bowl-mixer-section" className="relative w-full min-h-screen py-32 overflow-hidden flex flex-col items-center justify-center bg-[#050505]">
       
@@ -120,20 +185,20 @@ export default function CustomBowlBuilder() {
           FOUR PREMIUM COMBO BOWLS
           ========================================
         */}
-        <div className="w-full grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-6 md:gap-8 mb-32">
+        <div className="w-full grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8 mb-32">
           {PREMIUM_COMBOS.map((combo) => (
             <motion.div
               key={combo.id}
               initial={{ opacity: 0, y: 40 }}
               whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true, margin: "-100px" }}
+              viewport={{ once: true, margin: "-80px" }}
               transition={{ duration: 0.8, delay: combo.delay, ease: [0.16, 1, 0.3, 1] }}
               className="group relative"
             >
-              <div className="relative h-full w-full rounded-[2rem] bg-[#111111]/80 backdrop-blur-xl border border-white/5 p-6 sm:p-8 flex flex-col overflow-hidden transition-all duration-500 ease-out hover:border-[var(--v-gold)]/30 hover:bg-[#151515]/90 hover:shadow-[0_20px_40px_rgba(0,0,0,0.6),inset_0_1px_0_rgba(255,255,255,0.1)] hover:-translate-y-2">
+              <div className="relative h-full w-full rounded-[1.5rem] bg-[#111111]/80 backdrop-blur-xl border border-white/5 overflow-hidden transition-all duration-500 ease-out hover:border-[var(--v-gold)]/30 hover:bg-[#151515]/90 hover:shadow-[0_20px_40px_rgba(0,0,0,0.6),inset_0_1px_0_rgba(255,255,255,0.1)] hover:-translate-y-1">
                 
-                {/* Glow Effect behind image */}
-                <div className="absolute top-1/4 left-1/2 -translate-x-1/2 w-[150%] aspect-square bg-[var(--v-gold)]/10 rounded-full blur-[60px] opacity-0 group-hover:opacity-100 transition-opacity duration-700 pointer-events-none" />
+                {/* Glow Effect */}
+                <div className="absolute top-1/3 left-1/2 -translate-x-1/2 w-[120%] aspect-square bg-[var(--v-gold)]/8 rounded-full blur-[80px] opacity-0 group-hover:opacity-100 transition-opacity duration-700 pointer-events-none" />
 
                 {/* Badge */}
                 <div className={`absolute top-0 right-0 px-4 py-1.5 rounded-bl-2xl bg-gradient-to-r ${combo.badgeColor} z-20 shadow-lg`}>
@@ -142,39 +207,46 @@ export default function CustomBowlBuilder() {
                   </span>
                 </div>
 
-                {/* Bowl Image */}
-                <div className="relative w-full aspect-square mb-8 rounded-full overflow-hidden flex items-center justify-center transform group-hover:scale-105 transition-transform duration-700 ease-out drop-shadow-2xl">
-                  <div className="absolute inset-0 bg-gradient-to-b from-transparent to-black/40 z-10 rounded-full" />
+                {/* Combo Image - Landscape */}
+                <div className="relative w-full aspect-[16/10] overflow-hidden">
+                  <div className="absolute inset-0 bg-gradient-to-t from-[#111111] via-[#111111]/30 to-transparent z-10" />
                   <Image
                     src={combo.image}
                     alt={combo.title}
                     fill
-                    className="object-cover rounded-full mix-blend-lighten"
-                    sizes="(max-width: 768px) 100vw, (max-width: 1280px) 50vw, 25vw"
+                    className="object-cover transition-transform duration-700 ease-out group-hover:scale-105"
+                    sizes="(max-width: 768px) 100vw, 50vw"
                   />
                 </div>
 
-                {/* Content */}
-                <div className="mt-auto flex flex-col relative z-20">
-                  <h3 className="text-2xl font-bold text-white tracking-tight mb-2 group-hover:text-[var(--v-gold)] transition-colors duration-300">
+                {/* Content Overlay */}
+                <div className="relative z-20 p-6 sm:p-8 -mt-8">
+                  <h3 className="text-2xl md:text-3xl font-black text-white tracking-tight mb-2 group-hover:text-[var(--v-gold)] transition-colors duration-300">
                     {combo.title}
                   </h3>
-                  <p className="text-white/50 text-sm leading-relaxed mb-6 font-light min-h-[60px]">
+                  <p className="text-white/50 text-sm leading-relaxed mb-3 font-light">
                     {combo.description}
                   </p>
+                  <p className="text-[var(--v-gold)]/70 text-xs tracking-wide font-medium mb-5">
+                    {combo.flavors}
+                  </p>
 
-                  <div className="flex items-end justify-between mt-auto">
+                  <div className="flex items-end justify-between">
                     <div className="flex flex-col gap-2">
                       <span className="inline-flex items-center justify-center px-3 py-1 rounded-full bg-white/5 border border-white/10 text-white/70 text-[10px] font-medium tracking-wide w-fit">
-                        {combo.protein} PROTEIN
+                        {combo.count}
                       </span>
                       <span className="text-2xl font-black text-white">{combo.price}</span>
                     </div>
                     
-                    {/* Add Button (Micro Interaction) */}
-                    <div className="w-12 h-12 rounded-full bg-white/5 border border-white/10 flex items-center justify-center text-white group-hover:bg-[var(--v-gold)] group-hover:text-black group-hover:border-[var(--v-gold)] transition-all duration-300 transform group-hover:scale-110">
-                      <ArrowRight size={20} className="transform group-hover:-rotate-45 transition-transform duration-300" />
-                    </div>
+                    {/* Add Button */}
+                    <button
+                      onClick={() => handleAddCombo(combo)}
+                      className="h-12 px-6 rounded-full bg-white/5 border border-white/10 flex items-center gap-2 text-white hover:bg-[var(--v-gold)] hover:text-black hover:border-[var(--v-gold)] transition-all duration-300 transform active:scale-95 text-xs font-accent font-bold uppercase tracking-wider relative z-30"
+                    >
+                      <ShoppingBag size={16} />
+                      Add to Cart
+                    </button>
                   </div>
                 </div>
               </div>

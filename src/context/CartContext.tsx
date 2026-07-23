@@ -15,6 +15,7 @@ export interface CartItem {
 interface CartContextType {
   cart: CartItem[];
   addToCart: (slug: string, quantity: number) => void;
+  addCustomToCart: (item: Omit<CartItem, "quantity">) => void;
   removeFromCart: (slug: string) => void;
   updateQuantity: (slug: string, quantity: number) => void;
   clearCart: () => void;
@@ -78,6 +79,21 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
     window.dispatchEvent(new CustomEvent("cart-item-added"));
   };
 
+  const addCustomToCart = (item: Omit<CartItem, "quantity">) => {
+    setCart((prev) => {
+      const existing = prev.find((i) => i.slug === item.slug);
+      if (existing) {
+        return prev.map((i) =>
+          i.slug === item.slug ? { ...i, quantity: i.quantity + 1 } : i
+        );
+      }
+      return [...prev, { ...item, quantity: 1 }];
+    });
+
+    // Fire custom event to animate cart icon
+    window.dispatchEvent(new CustomEvent("cart-item-added"));
+  };
+
   const removeFromCart = (slug: string) => {
     setCart((prev) => prev.filter((item) => item.slug !== slug));
   };
@@ -107,6 +123,7 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
       value={{
         cart,
         addToCart,
+        addCustomToCart,
         removeFromCart,
         updateQuantity,
         clearCart,
@@ -128,6 +145,7 @@ export function useCart() {
     return {
       cart: [],
       addToCart: (_slug: string, _qty: number) => {},
+      addCustomToCart: (_item: Omit<CartItem, "quantity">) => {},
       removeFromCart: (_slug: string) => {},
       updateQuantity: (_slug: string, _qty: number) => {},
       clearCart: () => {},

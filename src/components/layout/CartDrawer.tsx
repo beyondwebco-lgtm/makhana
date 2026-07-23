@@ -209,12 +209,13 @@ export default function CartDrawer({ isOpen, onClose }: CartDrawerProps) {
                     </motion.button>
                   </Link>
 
-                  <button
-                    onClick={onClose}
-                    className="w-full py-4 rounded-full border border-white/10 text-white font-[family-name:var(--font-accent)] uppercase tracking-widest text-xs font-bold hover:bg-white/5 transition-colors"
-                  >
-                    Continue Shopping
-                  </button>
+                  <Link href="/cart" onClick={onClose} className="w-full">
+                    <button
+                      className="w-full py-4 rounded-full border border-white/10 text-white font-[family-name:var(--font-accent)] uppercase tracking-widest text-xs font-bold hover:bg-white/5 transition-colors"
+                    >
+                      View Shopping Cart
+                    </button>
+                  </Link>
                 </div>
               </div>
             )}

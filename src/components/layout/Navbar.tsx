@@ -8,6 +8,7 @@ import { Search, ShoppingBag, Heart, User, Menu, X } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useCart } from "@/context/CartContext";
 import CartDrawer from "./CartDrawer";
+import SearchOverlay from "./SearchOverlay";
 import { usePathname, useRouter } from "next/navigation";
 import { useFocusTrap } from "@/hooks/useFocusTrap";
 import { useRef } from "react";
@@ -26,13 +27,19 @@ export default function Navbar() {
   const [mobileOpen, setMobileOpen] = useState(false);
   const [pastHero, setPastHero] = useState(false);
   const [isCartOpen, setIsCartOpen] = useState(false);
+  const [isSearchOpen, setIsSearchOpen] = useState(false);
   const [badgeBounce, setBadgeBounce] = useState(false);
+  const [mounted, setMounted] = useState(false);
   const { cartCount } = useCart();
   const pathname = usePathname();
   const router = useRouter();
   
   const mobileMenuRef = useRef<HTMLDivElement>(null);
   useFocusTrap(mobileMenuRef, mobileOpen);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   useEffect(() => {
     const handleEscape = (e: KeyboardEvent) => {
@@ -52,7 +59,20 @@ export default function Navbar() {
       setTimeout(() => setBadgeBounce(false), 400);
     };
     window.addEventListener("cart-item-added", handleCartAdded);
-    return () => window.removeEventListener("cart-item-added", handleCartAdded);
+    
+    // Global Cmd+K / Ctrl+K search toggle shortcut
+    const handleGlobalSearchKey = (e: KeyboardEvent) => {
+      if ((e.metaKey || e.ctrlKey) && e.key?.toLowerCase() === "k") {
+        e.preventDefault();
+        setIsSearchOpen(true);
+      }
+    };
+    window.addEventListener("keydown", handleGlobalSearchKey);
+
+    return () => {
+      window.removeEventListener("cart-item-added", handleCartAdded);
+      window.removeEventListener("keydown", handleGlobalSearchKey);
+    };
   }, []);
 
   useEffect(() => {
@@ -171,12 +191,13 @@ export default function Navbar() {
           {/* Actions */}
           <div className="flex items-center gap-1 sm:gap-3 z-50 shrink-0">
             {[
-              { icon: Search, label: "Search", hideOnMobile: true },
-              { icon: User, label: "Account", hideOnMobile: true },
-              { icon: Heart, label: "Wishlist", hideOnMobile: true },
-            ].map(({ icon: Icon, label, hideOnMobile }) => (
+              { icon: Search, label: "Search", hideOnMobile: true, onClick: () => setIsSearchOpen(true) },
+              { icon: User, label: "Account", hideOnMobile: true, onClick: () => router.push("/account") },
+              { icon: Heart, label: "Wishlist", hideOnMobile: true, onClick: () => router.push("/account/wishlist") },
+            ].map(({ icon: Icon, label, hideOnMobile, onClick }) => (
               <button
                 key={label}
+                onClick={onClick}
                 className={cn(
                   "w-11 h-11 items-center justify-center rounded-full transition-all duration-300",
                   hideOnMobile ? "hidden md:flex" : "flex",
@@ -219,7 +240,7 @@ export default function Navbar() {
                 )}
               />
               <AnimatePresence>
-                {cartCount > 0 && (
+                {mounted && cartCount > 0 && (
                   <motion.span
                     initial={{ scale: 0 }}
                     animate={{ scale: 1 }}
@@ -292,7 +313,6 @@ export default function Navbar() {
                 </motion.div>
               ))}
               
-              {/* Mobile Actions Grid */}
               <motion.div
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
@@ -300,9 +320,9 @@ export default function Navbar() {
                 className="grid grid-cols-4 gap-4 mt-8 pt-8 border-t border-white/10"
               >
                 {[
-                  { icon: Search, label: "Search" },
-                  { icon: User, label: "Account" },
-                  { icon: Heart, label: "Wishlist" },
+                  { icon: Search, label: "Search", onClick: () => { setIsSearchOpen(true); setMobileOpen(false); } },
+                  { icon: User, label: "Account", onClick: () => { router.push("/account"); setMobileOpen(false); } },
+                  { icon: Heart, label: "Wishlist", onClick: () => { router.push("/account/wishlist"); setMobileOpen(false); } },
                   { icon: ShoppingBag, label: "Cart", onClick: () => { setIsCartOpen(true); setMobileOpen(false); } },
                 ].map(({ icon: Icon, label, onClick }) => (
                   <button
@@ -337,6 +357,7 @@ export default function Navbar() {
       </AnimatePresence>
 
       <CartDrawer isOpen={isCartOpen} onClose={() => setIsCartOpen(false)} />
+      <SearchOverlay isOpen={isSearchOpen} onClose={() => setIsSearchOpen(false)} />
     </>
   );
 }
